@@ -8,7 +8,7 @@ ica: ica.cpp
 	$(CC) $(CFLAGS) $< -o $@
 
 tssrun:
-	tssrun -A t=144:c=72:m=100G batch
+	tssrun -A t=144:c=72:m=10G batch
 
 send:
 	rsync -avc --exclude '.git' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
