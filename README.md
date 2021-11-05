@@ -16,6 +16,6 @@ $ OMP_NUM_THREADS=6 ./a.out
 ## ssh
 
 ```
-$ scp -Cr ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
+$ rsync -avc . b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
 $ ssh b36697@cinnamon.kudpc.kyoto-u.ac.jp
 ```
