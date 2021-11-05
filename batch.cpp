@@ -28,7 +28,7 @@ double test(const int sample, const int series){
 
 	const ICA::Matrix A = ICA::RandMatrix(sample, reng);
 	ICA::Matrix X = A * S;
-	auto result = ICA::BatchEasi(X);
+	auto result = ICA::FastICA(X);
 	ICA::Matrix G = result.W * A;
 	ICA::Matrix P = Pmatrix(G);
 	ICA::Matrix S2 = P.transpose() * result.Y;
