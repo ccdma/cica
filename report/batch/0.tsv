@@ -1,6 +1,6 @@
 series	10000
 times	100
-chebyt_start 2
+chebyt_start	2
 sample	mse	loop_ave
 2	0.0862231	3.22
 3	0.0855232	3.59
