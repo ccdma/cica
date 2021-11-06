@@ -127,7 +127,9 @@ namespace ICA {
 			Normalize(B, i);
 			const auto diff = std::abs(prevBi.dot(B.col(i)));
 			if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
+#ifdef DEBUG_PROGLESS
 			if (j==FASTICA_LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
+#endif
 		}
 
 #ifdef DEBUG_PROGLESS
