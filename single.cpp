@@ -3,7 +3,7 @@
 #include <vector>
 #include "ica.cpp"
 
-int sample(){
+int main(){
 	ICA::Reng reng(0);
 	const auto sample = 3;
 	const auto series = 1000;
