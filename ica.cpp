@@ -72,8 +72,8 @@ namespace ICA {
 #endif
 
 	ICA::Reng reng(0);
-	const auto sample = X.rows();
-	const auto series = X.cols();
+	const auto signals = X.rows();
+	const auto samplings = X.cols();
 	
 	const Matrix X_center = Centerize(X);
 	const Matrix X_cov = (X_center * X_center.transpose()) / double(X_center.cols() - 1);	// 分散共分散行列を作成
@@ -206,10 +206,10 @@ namespace ICA {
 	}
 
 	void WriteMatrix(std::stringstream& ss, Matrix& mat){
-		const auto sample = mat.rows();
-		const auto series = mat.cols();
-		for (int i=0; i<sample; i++){
-			for (int j=0;j<series;j++){
+		const auto signals = mat.rows();
+		const auto samplings = mat.cols();
+		for (int i=0; i<signals; i++){
+			for (int j=0;j<samplings;j++){
 				ss << mat(i,j) << ",";
 				if (WRITE_LIMIT < j) break;
 			}
