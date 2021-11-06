@@ -17,7 +17,7 @@ namespace ICA {
 	using Vector = Eigen::VectorXd;
 	using Reng = std::mt19937; 
 
-	const int LOOP = 500;
+	const int FASTICA_LOOP_MAX = 500;
 	const int WRITE_LIMIT = 10000;
 
 	Matrix RandMatrix(int size, Reng& engine){
@@ -45,6 +45,7 @@ namespace ICA {
 	struct FastICAResult {
 		Matrix W;	// 復元行列
 		Matrix Y;	// 復元信号
+		Eigen::VectorXi loop; 	// 不動点法のループ回数
 	};
 
 	/**
@@ -95,6 +96,7 @@ namespace ICA {
 	const auto g2 = [](double bx) { return 3*std::pow(bx, 2); };
 
 	const auto I = X_whiten.rows();
+	Eigen::VectorXi loop(I);
 	auto B = RandMatrix(I, reng);
 
 	for(int i=0; i<I; i++){
@@ -107,7 +109,10 @@ namespace ICA {
 #endif
 
 	for(int i=0; i<I; i++){
-		for(int j=0; j<LOOP; j++){
+		for(int j=0; j<FASTICA_LOOP_MAX; j++){
+			// ループ回数を記録
+			loop(i) = j+1;
+
 			// 値のコピー
 			const Vector prevBi = B.col(i);
 
@@ -122,7 +127,7 @@ namespace ICA {
 			Normalize(B, i);
 			const auto diff = std::abs(prevBi.dot(B.col(i)));
 			if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
-			if (j==LOOP-1) printf("[WARN] loop limit exceeded\n");
+			if (j==FASTICA_LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
 		}
 
 #ifdef DEBUG_PROGLESS
@@ -143,7 +148,7 @@ namespace ICA {
 		<< "\ttotal:" << std::chrono::duration_cast<std::chrono::milliseconds>(now-start).count() << std::endl;
 		prev = now;
 #endif
-		return FastICAResult{.W = B.transpose()*Atilda, .Y = Y};
+		return FastICAResult{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
 	};
 
 	class EASI {
