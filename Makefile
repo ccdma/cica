@@ -7,8 +7,9 @@ batch: batch.cpp
 ica: ica.cpp
 	$(CC) $(CFLAGS) $< -o $@
 
+# 相対パスで指定することを忘れない！
 tssrun:
-	tssrun -A t=144:c=72:m=10G batch
+	tssrun -A t=144:c=72 ./batch
 
 send:
 	rsync -avc --exclude '.git' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
