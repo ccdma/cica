@@ -255,7 +255,7 @@ namespace ICA {
 	/**
 	 * n:次数、a0：初期値、len：長さ
 	 */
-	Vector ChebytSeries(const int n, const int len, const double a0){
+	Vector ChebytSampling(const int n, const int len, const double a0){
 		Vector S(len);
 		double prev = a0;
 		for (int i=0; i<len; i++){
@@ -268,7 +268,7 @@ namespace ICA {
 	/**
 	 * w: 角周波数、len: 長さ
 	 */
-	Vector SinSeries(const double w, const int len){
+	Vector SinSampling(const double w, const int len){
 		Vector S(len);
 		const double gap = 0.1;
 		for (int i=0; i<len; i++){

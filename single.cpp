@@ -11,7 +11,7 @@ int main(){
 	std::vector<ICA::Vector> s(signals);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		s.at(i) = ICA::ChebytSeries(i+2, samplings, 0.1);
+		s.at(i) = ICA::ChebytSampling(i+2, samplings, 0.1);
 	}
 	ICA::Matrix noncenterS = ICA::VStack(s);
 	ICA::Matrix S = ICA::Centerize(noncenterS);
