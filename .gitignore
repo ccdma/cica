@@ -2,5 +2,5 @@
 *.csv
 .vscode/**
 
-./batch
-./single
+/batch
+/single
