@@ -9,7 +9,7 @@ ica: ica.cpp
 
 # 相対パスで指定することを忘れない！
 tssrun:
-	tssrun -A t=144:c=72 ./batch
+	tssrun -A t=72:c=72 ./batch
 
 send:
 	rsync -avc --exclude '.git' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
