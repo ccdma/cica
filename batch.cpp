@@ -43,7 +43,7 @@ double test(const int sample, const int series, const int seed){
 int main(){
 	auto series = 10000;
 	const auto times = 100;
-	const auto sample_max = 30;
+	const auto sample_max = 50;
 	for(int sample=2; sample<sample_max; sample++){
 		double mse_sum = 0.0;
 		#pragma omp parallel for reduction(+:mse_sum)
