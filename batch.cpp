@@ -4,19 +4,6 @@
 #include <vector>
 #include "ica.cpp"
 
-ICA::Matrix Pmatrix(ICA::Matrix& G){
-	ICA::Matrix P = ICA::Matrix::Zero(G.rows(), G.cols());
-	#pragma omp parallel for
-	for(int i=0; i<G.rows(); i++){
-		ICA::Vector row = G.row(i);
-		ICA::Vector::Index maxId;
-		row.cwiseAbs().maxCoeff(&maxId);
-		const double x = row(maxId);
-		P(i, maxId) = (x > 0) ? 1 : -1;
-	}
-	return P;
-}
-
 std::vector<double> test(const int sample, const int series, const int seed){
 	ICA::Reng reng(seed);
 
@@ -28,11 +15,10 @@ std::vector<double> test(const int sample, const int series, const int seed){
 	ICA::Matrix noncenterS = ICA::VStack(s);
 	ICA::Matrix S = ICA::Centerize(noncenterS);
 
-	const ICA::Matrix A = ICA::RandMatrix(sample, reng);
+	ICA::Matrix A = ICA::RandMatrix(sample, reng);
 	ICA::Matrix X = A * S;
 	auto result = ICA::FastICA(X);
-	ICA::Matrix G = result.W * A;
-	ICA::Matrix P = Pmatrix(G);
+	ICA::Matrix P = ICA::CirculantP(A, result.W);
 	ICA::Matrix S2 = P.transpose() * result.Y;
 
 	// 平均2乗誤差
