@@ -40,10 +40,9 @@ double test(const int sample, const int series){
 }
 
 int main(){
-	// auto sample = 3;
 	auto series = 10000;
 	const auto times = 100;
-	const auto sample_max = 50;
+	const auto sample_max = 30;
 	for(int sample=2; sample<sample_max; sample++){
 		double mse_sum = 0.0;
 		for (int i=0; i<times; i++){
@@ -51,6 +50,5 @@ int main(){
 		}
 		std::cout << sample << "\t" << mse_sum/times << std::endl;
 	}
-
 	return 0;
 }

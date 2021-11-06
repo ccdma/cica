@@ -1,5 +1,5 @@
 CC := g++
-CFLAGS := -I ./include/ -fopenmp -O3 -mtune=native -march=native -std=c++11
+CFLAGS := -I ./include/ -fopenmp -O3 -std=c++11
 
 batch: batch.cpp
 	$(CC) $(CFLAGS) $< -o $@
