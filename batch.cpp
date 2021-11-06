@@ -18,7 +18,7 @@ std::vector<double> test(const int sample, const int series, const int seed){
 	ICA::Matrix A = ICA::RandMatrix(sample, reng);
 	ICA::Matrix X = A * S;
 	auto result = ICA::FastICA(X);
-	ICA::Matrix P = ICA::CirculantP(A, result.W);
+	ICA::Matrix P = ICA::SimpleCirculantP(A, result.W);
 	ICA::Matrix S2 = P.transpose() * result.Y;
 
 	// 平均2乗誤差

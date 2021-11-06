@@ -19,7 +19,7 @@ int main(){
 	ICA::Matrix A = ICA::RandMatrix(sample, reng);
 	ICA::Matrix X = A * S;
 	auto result = ICA::FastICA(X);
-	ICA::Matrix P = ICA::CirculantP(A, result.W);
+	ICA::Matrix P = ICA::SimpleCirculantP(A, result.W);
 	ICA::Matrix S2 = P.transpose() * result.Y;
 
     const int plot_num = std::min(300, series);

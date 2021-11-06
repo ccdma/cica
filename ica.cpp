@@ -283,7 +283,7 @@ namespace ICA {
 	 * A: 混合行列
 	 * W: 復元行列
 	 */
-	Matrix CirculantP(Matrix& A, Matrix& W){
+	Matrix SimpleCirculantP(Matrix& A, Matrix& W){
 		Matrix G = W * A;
 		Matrix P = Matrix::Zero(G.rows(), G.cols());
 		#pragma omp parallel for
