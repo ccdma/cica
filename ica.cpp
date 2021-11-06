@@ -20,6 +20,9 @@ namespace ICA {
 	const int FASTICA_LOOP_MAX = 500;
 	const int WRITE_LIMIT = 10000;
 
+	/**
+	 * -0.5~0.5までの一様乱数からなる正方行列を生成
+	 */ 
 	Matrix RandMatrix(int size, Reng& engine){
 		std::uniform_real_distribution<double> distribution(-0.5, 0.5);
 		auto generator = [&] (double dummy) {return distribution(engine);};
@@ -28,7 +31,7 @@ namespace ICA {
 
 	/**
 	 * 正方行列でなくてはいけない
-	 * i番目を0~i-1番目までの縦ベクトルの直行空間に射影
+	 * i番目を0~i-1番目までの縦ベクトルの直行空間に射影＋長さの正規化
 	 */
 	void Normalize(Matrix& M, int i){
 		const auto size = M.cols();
@@ -73,7 +76,7 @@ namespace ICA {
 	const auto series = X.cols();
 	
 	const Matrix X_center = Centerize(X);
-	const Matrix X_cov = (X_center * X_center.transpose()) / double(X_center.cols() - 1);
+	const Matrix X_cov = (X_center * X_center.transpose()) / double(X_center.cols() - 1);	// 分散共分散行列を作成
 
 	Eigen::SelfAdjointEigenSolver<Matrix> es(X_cov);
 	if (es.info() != Eigen::Success) abort();
@@ -81,7 +84,7 @@ namespace ICA {
 	Vector lambdas = es.eigenvalues().real();
 	Matrix P = es.eigenvectors().real();
 	Matrix Atilda = lambdas.cwiseSqrt().asDiagonal().inverse() * P.transpose();
-	Matrix X_whiten = Atilda * X_center;
+	Matrix X_whiten = Atilda * X_center;	// 無相関化
 
 #ifdef DEBUG_PROGLESS
 	now = std::chrono::system_clock::now();
@@ -96,8 +99,8 @@ namespace ICA {
 	std::cout << (X_whiten * X_whiten.transpose()) / double(X_whiten.cols() - 1) << std::endl;
 #endif
 
-	const auto g = [](double bx) { return std::pow(bx, 3); };
-	const auto g2 = [](double bx) { return 3*std::pow(bx, 2); };
+	const auto g = [](double bx) { return std::pow(bx, 3); };	// 不動点法に4次キュムラントを使用する
+	const auto g2 = [](double bx) { return 3*std::pow(bx, 2); };	// g()の微分
 
 	const auto I = X_whiten.rows();
 	Eigen::VectorXi loop(I);
@@ -114,16 +117,13 @@ namespace ICA {
 
 	for(int i=0; i<I; i++){
 		for(int j=0; j<FASTICA_LOOP_MAX; j++){
-			// ループ回数を記録
-			loop(i) = j+1;
-
-			// 値のコピー
-			const Vector prevBi = B.col(i);
+			loop(i) = j+1;	// ループ回数を記録
+			const Vector prevBi = B.col(i);	// 値のコピー
 
 			const auto collen = X_whiten.cols();
 			Matrix ave(I, collen);
 			#pragma omp parallel for
-			for(int k=0; k<collen; k++){
+			for(int k=0; k<collen; k++){	// 不動点法による更新
 				const Vector x = X_whiten.col(k);
 				ave.col(k) = g(x.dot(B.col(i)))*x - g2(x.dot(B.col(i)))*B.col(i);  
 			}
