@@ -15,8 +15,8 @@ ICA::Matrix Pmatrix(ICA::Matrix& G){
 	return P;
 }
 
-double test(const int sample, const int series){
-	ICA::Reng reng(0);
+double test(const int sample, const int series, const int seed){
+	ICA::Reng reng(seed);
 
 	std::vector<ICA::Vector> s(sample);
 	#pragma omp parallel for
@@ -45,8 +45,9 @@ int main(){
 	const auto sample_max = 30;
 	for(int sample=2; sample<sample_max; sample++){
 		double mse_sum = 0.0;
+		#pragma omp parallel for reduction(+:mse_sum)
 		for (int i=0; i<times; i++){
-			mse_sum += test(sample, series);
+			mse_sum += test(sample, series, i);
 		}
 		std::cout << sample << "\t" << mse_sum/times << std::endl;
 	}
