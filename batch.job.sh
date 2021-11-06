@@ -3,8 +3,7 @@
 #QSUB -q pc
 #QSUB -W 1:00
 #QSUB -A p=1:t=72:c=72
-#QSUB -o result.out
-#QSUB -m be
+#QSUB -m e
 #QSUB -M matsuyama.hiroki.24c@st.kyoto-u.ac.jp
 
 #============ Shell Script ============

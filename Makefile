@@ -12,7 +12,7 @@ tssrun:
 	tssrun -A t=72:c=72 ./batch
 
 send:
-	rsync -avc --exclude '.git' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
+	rsync -avc --exclude '.git' --exclude 'batch' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
 
 clean:
 	rm -f *.out batch ica

@@ -50,6 +50,10 @@ int main(){
 	auto series = 10000;
 	const auto times = 100;
 	const auto sample_max = 100;
+	std::cout << "series\t" << series << std::endl;
+	std::cout << "times\t" << times << std::endl;
+	std::cout << "sample_max\t" << sample_max << std::endl;
+	std::cout << "chebyt2~" << std::endl;
 	for(int sample=2; sample<sample_max; sample++){
 		double mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
