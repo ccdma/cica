@@ -4,13 +4,13 @@
 #include <vector>
 #include "ica.cpp"
 
-std::vector<double> test(const int sample, const int series, const int seed){
+std::vector<double> test(const int sample, const int series, const int seed, const int chebyt_start_n){
 	ICA::Reng reng(seed);
 
 	std::vector<ICA::Vector> s(sample);
 	#pragma omp parallel for
 	for (int i=0; i<sample; i++){
-		s.at(i) = ICA::ChebytSeries(i+2, series, 0.2);
+		s.at(i) = ICA::ChebytSeries(i+chebyt_start_n, series, 0.2);
 	}
 	ICA::Matrix noncenterS = ICA::VStack(s);
 	ICA::Matrix S = ICA::Centerize(noncenterS);
@@ -35,9 +35,10 @@ std::vector<double> test(const int sample, const int series, const int seed){
 int main(){
 	auto series = 10000;
 	const auto times = 100;
+	const auto chebyt_start_n = 2;
 	std::cout << "series\t" << series << std::endl;
 	std::cout << "times\t" << times << std::endl;
-	std::cout << "chebyt_start\t" << 2 << std::endl;
+	std::cout << "chebyt_start_n\t" << chebyt_start_n << std::endl;
 	std::cout << "sample\tmse\tloop_ave" << std::endl;	// header
 	const auto sample_max = 200;
 	for(int sample=98; sample<sample_max; sample++){
