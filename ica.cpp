@@ -28,7 +28,7 @@ namespace ICA {
 
 	/**
 	 * 正方行列でなくてはいけない
-	 * i番目を直行空間に射影
+	 * i番目を0~i-1番目までの縦ベクトルの直行空間に射影
 	 */
 	void Normalize(Matrix& M, int i){
 		const auto size = M.cols();
@@ -38,6 +38,10 @@ namespace ICA {
 		M.col(i) = M.col(i) / std::sqrt(M.col(i).squaredNorm());
 	}
 
+	/**
+	 * 系列の中心化を行う
+	 * 横に並ぶ値の平均が0になるように修正される
+	 */ 
 	Matrix Centerize(Matrix& M){
 		return M.colwise() - M.rowwise().mean();
 	}
@@ -172,7 +176,6 @@ namespace ICA {
 		}
 
 	private:
-
 		const double EASI_MU = 0.001953125;
 		int size;
 
@@ -262,6 +265,9 @@ namespace ICA {
 		return S;
 	}
 
+	/**
+	 * w: 角周波数、len: 長さ
+	 */
 	Vector SinSeries(const double w, const int len){
 		Vector S(len);
 		const double gap = 0.1;
