@@ -39,8 +39,8 @@ int main(){
 	std::cout << "times\t" << times << std::endl;
 	std::cout << "chebyt_start\t" << 2 << std::endl;
 	std::cout << "sample\tmse\tloop_ave" << std::endl;	// header
-	const auto sample_max = 100;
-	for(int sample=2; sample<sample_max; sample++){
+	const auto sample_max = 200;
+	for(int sample=98; sample<sample_max; sample++){
 		double mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
 		#pragma omp parallel for reduction(+:mse_sum,loop_ave_sum)
