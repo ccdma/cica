@@ -46,7 +46,7 @@ int main(){
 		double loop_ave_sum = 0.0;
 		#pragma omp parallel for reduction(+:mse_sum,loop_ave_sum)
 		for (int i=0; i<times; i++){
-			auto report = test(sample, series, i);
+			auto report = test(sample, series, i, chebyt_start_n);
 			mse_sum += report.at(0);
 			loop_ave_sum += report.at(1);
 		}
