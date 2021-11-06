@@ -4,14 +4,14 @@
 #include "ica.cpp"
 
 int main(){
-	ICA::Reng reng(1);
-	const auto sample = 4;
+	ICA::Reng reng(0);
+	const auto sample = 20;
 	const auto series = 1000;
 	
 	std::vector<ICA::Vector> s(sample);
 	#pragma omp parallel for
 	for (int i=0; i<sample; i++){
-		s.at(i) = ICA::SinSeries(1.0/((double)i+1.0), series);
+		s.at(i) = ICA::ChebytSeries(i+2, series, 0.1);
 	}
 	ICA::Matrix noncenterS = ICA::VStack(s);
 	ICA::Matrix S = ICA::Centerize(noncenterS);
