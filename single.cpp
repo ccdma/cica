@@ -10,7 +10,7 @@ int main(){
 	
 	std::vector<ICA::Vector> s(sample);
 	#pragma omp parallel for
-	for (int i=0; i<sample-2; i++){
+	for (int i=0; i<sample; i++){
 		s.at(i) = ICA::SinSeries(1.0/((double)i+1.0), series);
 	}
 	ICA::Matrix noncenterS = ICA::VStack(s);
