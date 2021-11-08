@@ -222,6 +222,12 @@ namespace cica {
 		}
 	}
 
+	void save_stream(std::stringstream& ss, std::string filename){
+		std::ofstream outputfile(filename);
+		outputfile << ss.rdbuf();
+		outputfile.close();
+	}
+
 	enum class cheby {
 		T,	// 第一種
 		U	// 第二種
