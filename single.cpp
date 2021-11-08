@@ -4,6 +4,19 @@
 #include "ica.cpp"
 
 int main(){
+	cica::cvector cvec = cica::const_powerd_sampling(3, M_PI/5.2, 1000);
+	cica::matrix rvec = cvec.real().transpose();
+	cica::matrix ivec = cvec.imag().transpose();
+	std::stringstream ss;
+	cica::write_matrix(ss, rvec);
+	cica::write_matrix(ss, ivec);
+	std::ofstream outputfile("r.csv");
+	outputfile << ss.rdbuf();
+	outputfile.close();
+	return 0;
+}
+
+int smain(){
 	cica::reng reng(0);
 	const auto signals = 3;
 	const auto samplings = 1000;

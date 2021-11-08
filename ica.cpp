@@ -9,6 +9,7 @@
 #include <cmath>
 #include <chrono>
 #include <sstream>
+#include <complex>
 #include <Eigen/Dense>
 
 namespace cica {
@@ -17,6 +18,7 @@ namespace cica {
 	using vector = Eigen::VectorXd;
 	using cmatrix = Eigen::MatrixXcd;
 	using cvector = Eigen::VectorXcd;
+	using dcomplex = std::complex<double>;
 	using reng = std::mt19937; 
 
 	const int FASTICA_LOOP_MAX = 500;
@@ -202,7 +204,7 @@ namespace cica {
 		return EasiResult{.W = easi.B, .Y = Y};
 	}
     
-	std::vector<double> ToStdVec(vector& v1){
+	std::vector<double> to_std_vector(vector& v1){
 		std::vector<double> v2(v1.data(), v1.data() + v1.size());
 		return v2;
 	}
@@ -212,8 +214,9 @@ namespace cica {
 		const auto samplings = mat.cols();
 		for (int i=0; i<signals; i++){
 			for (int j=0;j<samplings;j++){
-				ss << mat(i,j) << ",";
-				if (WRITE_LIMIT < j) break;
+				ss << mat(i,j);
+				if (std::min<int>(WRITE_LIMIT, samplings) == j+1) break;
+				ss << ",";
 			}
 			ss << std::endl;
 		}
@@ -229,7 +232,7 @@ namespace cica {
 	 * オーバーフローを避けるため、漸化式を利用
 	 * n: 次数(n>=0) return: T_n(x)の値
 	 */
-	double eval_chebyshev(const double x, const int n, const cheby type = cheby::T){
+	double eval_chebyshev(const int n, const double x, const cheby type = cheby::T){
 		double c0 = 1.0;
 		double c1 = type == cheby::T ? x : 2*x;
 		if (n == 0) {
@@ -267,7 +270,7 @@ namespace cica {
 		double prev = a0;
 		for (int i=0; i<len; i++){
 			S(i) = prev;
-			prev = eval_chebyshev(prev, n);
+			prev = eval_chebyshev(n, prev);
 		}
 		return S;
 	}
@@ -280,6 +283,22 @@ namespace cica {
 		const double gap = 0.1;
 		for (int i=0; i<len; i++){
 			S(i) = std::sin(w*(double)i*gap);
+		}
+		return S;
+	}
+
+	/**
+	 * パワー一定のカオス符号
+	 */ 
+	cvector const_powerd_sampling(const int n, const double rad_0, const int len){
+		cvector S(len);
+		dcomplex a_0(std::cos(rad_0), std::sin(rad_0));
+		S(0) = a_0;
+		for (int i=1; i<len; i++){
+			const double real = eval_chebyshev(n, a_0.real());
+			const double imag = eval_chebyshev(n-1, a_0.real(), cheby::U)*a_0.imag();
+			a_0 = dcomplex(real, imag);
+			S(i) = a_0;
 		}
 		return S;
 	}
