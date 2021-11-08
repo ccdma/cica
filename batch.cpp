@@ -18,7 +18,7 @@ std::vector<double> test(const int signals, const int samplings, const int seed,
 
 	cica::matrix A = cica::rand_matrix(signals, reng);
 	cica::matrix X = A * S;
-	auto result = cica::fast_ica(X);
+	auto result = cica::fastica(X);
 	cica::matrix P = cica::simple_circulant_P(A, result.W);
 	cica::matrix S2 = P.transpose() * result.Y;
 

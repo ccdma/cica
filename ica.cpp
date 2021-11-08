@@ -18,6 +18,7 @@ namespace cica {
 	using vector = Eigen::VectorXd;
 	using cmatrix = Eigen::MatrixXcd;
 	using cvector = Eigen::VectorXcd;
+	using ivector = Eigen::VectorXi;
 	using dcomplex = std::complex<double>;
 	using reng = std::mt19937; 
 
@@ -53,16 +54,16 @@ namespace cica {
 		return M.colwise() - M.rowwise().mean();
 	}
 
-	struct FastICAResult {
+	struct fastica_result {
 		matrix W;	// 復元行列
 		matrix Y;	// 復元信号
-		Eigen::VectorXi loop; 	// 不動点法のループ回数
+		ivector loop; 	// 不動点法のループ回数
 	};
 
 	/**
 	 * X: 内部で中心化は行うが、すでに中心化されていることが望ましい（元信号Sの中心化ができていれば、混合されたXも自然と中心化されるはず）
 	 */
-	FastICAResult fast_ica(matrix& X) {
+	fastica_result fastica(matrix& X) {
 
 #ifdef DEBUG_PROGLESS
 	std::chrono::system_clock::time_point start, prev, now;
@@ -158,15 +159,15 @@ namespace cica {
 		<< "\ttotal:" << std::chrono::duration_cast<std::chrono::milliseconds>(now-start).count() << std::endl;
 		prev = now;
 #endif
-		return FastICAResult{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
+		return fastica_result{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
 	};
 
-	class EASI {
+	class easi {
 	
 	public:
 		cica::matrix B;
 
-		EASI(const int size){
+		easi(const int size){
 			reng reng(0);
 			this->size = size;
 			B = rand_matrix(size, reng);
@@ -188,20 +189,20 @@ namespace cica {
 		}
 	};
 
-	struct EasiResult {
+	struct easi_result {
 		matrix W;	// 復元行列
 		matrix Y;	// 復元信号
 	};
 
-	EasiResult batch_easi(matrix& X) {
-		EASI easi(X.rows());
+	easi_result batch_easi(matrix& X) {
+		easi easi(X.rows());
 		matrix Y(X.rows(), X.cols());
 		for (int i=0; i<X.cols(); i++){
 			vector x = X.col(i);
 			vector y = easi.update(x);
 			Y.col(i) = y;
 		}
-		return EasiResult{.W = easi.B, .Y = Y};
+		return easi_result{.W = easi.B, .Y = Y};
 	}
     
 	std::vector<double> to_std_vector(vector& v1){
