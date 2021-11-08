@@ -6,21 +6,21 @@
 #include "ica.cpp"
 
 std::vector<double> test(const int signals, const int samplings, const int seed, const int chebyt_start_n){
-	ICA::Reng reng(seed);
+	cica::reng reng(seed);
 
-	std::vector<ICA::Vector> s(signals);
+	std::vector<cica::vector> s(signals);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		s.at(i) = ICA::ChebytSampling(i+chebyt_start_n, samplings, 0.2);
+		s.at(i) = cica::chebyt_sampling(i+chebyt_start_n, samplings, 0.2);
 	}
-	ICA::Matrix noncenterS = ICA::VStack(s);
-	ICA::Matrix S = ICA::Centerize(noncenterS);
+	cica::matrix noncenterS = cica::vstack(s);
+	cica::matrix S = cica::centerize(noncenterS);
 
-	ICA::Matrix A = ICA::RandMatrix(signals, reng);
-	ICA::Matrix X = A * S;
-	auto result = ICA::FastICA(X);
-	ICA::Matrix P = ICA::SimpleCirculantP(A, result.W);
-	ICA::Matrix S2 = P.transpose() * result.Y;
+	cica::matrix A = cica::rand_matrix(signals, reng);
+	cica::matrix X = A * S;
+	auto result = cica::fast_ica(X);
+	cica::matrix P = cica::simple_circulant_P(A, result.W);
+	cica::matrix S2 = P.transpose() * result.Y;
 
 	// 平均2乗誤差
 	const double mse = (S2-S).array().pow(2).mean();
