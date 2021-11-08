@@ -15,6 +15,8 @@ namespace cica {
 
 	using matrix = Eigen::MatrixXd;
 	using vector = Eigen::VectorXd;
+	using cmatrix = Eigen::MatrixXcd;
+	using cvector = Eigen::VectorXcd;
 	using reng = std::mt19937; 
 
 	const int FASTICA_LOOP_MAX = 500;

@@ -5,7 +5,7 @@
 
 int main(){
 	cica::reng reng(0);
-	const auto signals = 20;
+	const auto signals = 3;
 	const auto samplings = 1000;
 	
 	std::vector<cica::vector> s(signals);
