@@ -217,26 +217,31 @@ namespace ICA {
 		}
 	}
 
+	enum class cheby {
+		T,	// 第一種
+		U	// 第二種
+	};
+
 	/**
 	 * チェビシェフ多項式の値を計算
 	 * オーバーフローを避けるため、漸化式を利用
 	 * n: 次数(n>=0) return: T_n(x)の値
 	 */
-	double EvalChebyt(const double x, const int n){
-		double t0 = 1.0;
-		double t1 = x;
+	double EvalChebyt(const double x, const int n, const cheby type = cheby::T){
+		double c0 = 1.0;
+		double c1 = type == cheby::T ? x : 2*x;
 		if (n == 0) {
-			return t0;
+			return c0;
 		} else if (n == 1) {
-			return t1;
+			return c1;
 		}
-		double t2;
+		double c2;
 		for(int i=2; i<=n; i++){
-			t2 = 2*x*t1-t0;
-			t0 = t1;
-			t1 = t2;
+			c2 = 2*x*c1-c0;
+			c0 = c1;
+			c1 = c2;
 		}
-		return t2;
+		return c2;
 	}
 
 	/**

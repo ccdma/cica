@@ -1,5 +1,6 @@
 // #define DEBUG_PROGLESS
 #define EIGEN_DONT_PARALLELIZE
+#define EIGEN_NO_DEBUG
 
 #include <vector>
 #include "ica.cpp"
