@@ -311,6 +311,8 @@ namespace cica {
 
 	/**
 	 * パワー一定のカオス符号
+	 * n: n倍角
+	 * rad_0: 初期値の偏角(rad)
 	 */ 
 	cvector const_powerd_sampling(const int n, const double rad_0, const int len){
 		cvector S(len);
