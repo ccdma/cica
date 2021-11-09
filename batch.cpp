@@ -1,4 +1,4 @@
-#define EIGEN_DONT_PARALLELIZE
+#define NPARALLELIZE
 #define NDEBUG
 #define NPROGLESS
 

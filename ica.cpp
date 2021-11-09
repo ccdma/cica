@@ -1,12 +1,14 @@
 // #define EIGEN_USE_BLAS
-// #define EIGEN_DONT_PARALLELIZE
 // #define NDEBUG
 // #define NPROGLESS
+// #define NPARALLELIZE
+
+#ifdef NPARALLELIZE
+	#define EIGEN_DONT_PARALLELIZE
+#endif
 
 #ifdef NDEBUG
 	#define EIGEN_NO_DEBUG
-#else
-	#undef EIGEN_NO_DEBUG
 #endif
 
 #include <iostream>
@@ -138,7 +140,9 @@ namespace cica {
 
 			const auto collen = X_whiten.cols();
 			matrix ave(I, collen);
-			#pragma omp parallel for
+			#ifdef NPARALLELIZE
+				#pragma omp parallel for
+			#endif
 			for(int k=0; k<collen; k++){	// 不動点法による更新
 				const vector x = X_whiten.col(k);
 				ave.col(k) = g(x.dot(B.col(i)))*x - g2(x.dot(B.col(i)))*B.col(i);  
@@ -330,7 +334,9 @@ namespace cica {
 	matrix simple_circulant_P(matrix& A, matrix& W){
 		matrix G = W * A;
 		matrix P = matrix::Zero(G.rows(), G.cols());
-		#pragma omp parallel for
+		#ifdef NPARALLELIZE
+			#pragma omp parallel for
+		#endif
 		for(int i=0; i<G.rows(); i++){
 			vector row = G.row(i);
 			vector::Index maxId;
