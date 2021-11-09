@@ -1,6 +1,12 @@
-// #define DEBUG_PROGLESS
-// #define DEBUG_MATRIX
 // #define EIGEN_USE_BLAS
+// #define EIGEN_DONT_PARALLELIZE
+// #define NDEBUG
+
+#ifdef NDEBUG
+	#define EIGEN_NO_DEBUG
+#else
+	#undef EIGEN_NO_DEBUG
+#endif
 
 #include <iostream>
 #include <fstream>
@@ -10,6 +16,7 @@
 #include <chrono>
 #include <sstream>
 #include <complex>
+#include <cassert>
 #include <Eigen/Dense>
 
 namespace cica {
@@ -50,8 +57,17 @@ namespace cica {
 	 * 系列の中心化を行う
 	 * 横に並ぶ値の平均が0になるように修正される
 	 */ 
-	matrix centerize(matrix& M){
+	matrix centerize(const matrix& M){
 		return M.colwise() - M.rowwise().mean();
+	}
+
+	/**
+	 * 分散共分散行列を計算する
+	 * E[(M−μ)(M−μ)^⊤]である
+	 */ 
+	matrix cov(const matrix& M){
+		const matrix M_center = centerize(M);
+		return (M_center * M_center.transpose()) / double(M_center.cols() - 1);
 	}
 
 	struct fastica_result {
@@ -65,7 +81,7 @@ namespace cica {
 	 */
 	fastica_result fastica(matrix& X) {
 
-#ifdef DEBUG_PROGLESS
+#ifndef NDEBUG
 	std::chrono::system_clock::time_point start, prev, now;
 	start = std::chrono::system_clock::now();
 	prev = start;
@@ -81,17 +97,17 @@ namespace cica {
 	const auto samplings = X.cols();
 	
 	const matrix X_center = centerize(X);
-	const matrix X_cov = (X_center * X_center.transpose()) / double(X_center.cols() - 1);	// 分散共分散行列を作成
+	const matrix X_cov = cov(X_center);	// 分散共分散行列を作成
 
 	Eigen::SelfAdjointEigenSolver<matrix> es(X_cov);
 	if (es.info() != Eigen::Success) abort();
 
-	vector lambdas = es.eigenvalues().real();
-	matrix P = es.eigenvectors().real();
-	matrix Atilda = lambdas.cwiseSqrt().asDiagonal().inverse() * P.transpose();
-	matrix X_whiten = Atilda * X_center;	// 無相関化
+	const vector lambdas = es.eigenvalues().real();
+	const matrix P = es.eigenvectors().real();
+	const matrix Atilda = lambdas.cwiseSqrt().asDiagonal().inverse() * P.transpose();
+	const matrix X_whiten = Atilda * X_center;	// 無相関化
 
-#ifdef DEBUG_PROGLESS
+#ifndef NDEBUG
 	now = std::chrono::system_clock::now();
 	std::cout 
 	<< "[PROGLESS] start fixed point method"
@@ -99,10 +115,7 @@ namespace cica {
 	prev = now;
 #endif
 
-#ifdef DEBUG_MATRIX
-	// 単位行列であることを確認
-	std::cout << (X_whiten * X_whiten.transpose()) / double(X_whiten.cols() - 1) << std::endl;
-#endif
+	assert(cov(X_whiten).isApprox(matrix::Identity(cov(X_whiten).rows(), cov(X_whiten).cols())));
 
 	const auto g = [](double bx) { return std::pow(bx, 3); };	// 不動点法に4次キュムラントを使用する
 	const auto g2 = [](double bx) { return 3*std::pow(bx, 2); };	// g()の微分
@@ -115,10 +128,7 @@ namespace cica {
 		normalize(B, i);
 	}
 
-#ifdef DEBUG_MATRIX
-		// 単位行列であることを確認
-	std::cout << B * B.transpose() << std::endl;
-#endif
+	assert((B * B.transpose()).isApprox(matrix::Identity(B.rows(), B.cols())));
 
 	for(int i=0; i<I; i++){
 		for(int j=0; j<FASTICA_LOOP_MAX; j++){
@@ -136,12 +146,12 @@ namespace cica {
 			normalize(B, i);
 			const auto diff = std::abs(prevBi.dot(B.col(i)));
 			if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
-#ifdef DEBUG_PROGLESS
+#ifndef NDEBUG
 			if (j==FASTICA_LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
 #endif
 		}
 
-#ifdef DEBUG_PROGLESS
+#ifndef NDEBUG
 		now = std::chrono::system_clock::now();
 		std::cout
 		<< "[PROGLESS] end loop " << i
@@ -151,7 +161,7 @@ namespace cica {
 		}
 		matrix Y = B.transpose() * X_whiten;
 
-#ifdef DEBUG_PROGLESS
+#ifndef NDEBUG
 		now = std::chrono::system_clock::now();
 		std::cout
 		<< "[PROGLESS] end fastica "

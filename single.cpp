@@ -1,4 +1,4 @@
-#define DEBUG_PROGLESS
+#define NDEBUG
 
 #include <vector>
 #include "ica.cpp"
