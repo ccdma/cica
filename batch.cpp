@@ -1,5 +1,6 @@
 #define EIGEN_DONT_PARALLELIZE
 #define NDEBUG
+#define NPROGLESS
 
 #include <vector>
 #include "ica.cpp"

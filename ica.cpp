@@ -1,6 +1,7 @@
 // #define EIGEN_USE_BLAS
 // #define EIGEN_DONT_PARALLELIZE
 // #define NDEBUG
+// #define NPROGLESS
 
 #ifdef NDEBUG
 	#define EIGEN_NO_DEBUG
@@ -81,7 +82,7 @@ namespace cica {
 	 */
 	fastica_result fastica(matrix& X) {
 
-#ifndef NDEBUG
+#ifndef NPROGLESS
 	std::chrono::system_clock::time_point start, prev, now;
 	start = std::chrono::system_clock::now();
 	prev = start;
@@ -107,7 +108,7 @@ namespace cica {
 	const matrix Atilda = lambdas.cwiseSqrt().asDiagonal().inverse() * P.transpose();
 	const matrix X_whiten = Atilda * X_center;	// 無相関化
 
-#ifndef NDEBUG
+#ifndef NPROGLESS
 	now = std::chrono::system_clock::now();
 	std::cout 
 	<< "[PROGLESS] start fixed point method"
@@ -146,12 +147,12 @@ namespace cica {
 			normalize(B, i);
 			const auto diff = std::abs(prevBi.dot(B.col(i)));
 			if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
-#ifndef NDEBUG
+#ifndef NPROGLESS
 			if (j==FASTICA_LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
 #endif
 		}
 
-#ifndef NDEBUG
+#ifndef NPROGLESS
 		now = std::chrono::system_clock::now();
 		std::cout
 		<< "[PROGLESS] end loop " << i
@@ -161,7 +162,7 @@ namespace cica {
 		}
 		matrix Y = B.transpose() * X_whiten;
 
-#ifndef NDEBUG
+#ifndef NPROGLESS
 		now = std::chrono::system_clock::now();
 		std::cout
 		<< "[PROGLESS] end fastica "

@@ -1,4 +1,5 @@
 #define NDEBUG
+// #define NPROGLESS
 
 #include <vector>
 #include "ica.cpp"
