@@ -7,10 +7,15 @@ SRCS += symbolic.cpp
 $(SRCS:.cpp=):
 	$(CC) $(CFLAGS) $@.cpp -o $@.out
 
-send:
-	rsync -avc --exclude '.git' --exclude '*.out' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
-
 clean:
 	rm -f *.out *.csv
 
-.PHONY: clean send
+RSYNC := rsync -avc --exclude '.git' --exclude '*.out' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
+
+send:
+	$(RSYNC)
+
+send-force:
+	$(RSYNC) --delete
+
+.PHONY: clean send send-force

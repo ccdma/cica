@@ -39,15 +39,15 @@ test_report test(const int signals, const int samplings, const int seed, const d
 
 int main(){
 	cica::random_engine random_engine(0);
-	const auto signals = 10;
-	const auto samplings = 1000;
+	const auto signals = 50;
+	const auto samplings = 10000;
 	const auto trials = 100;
 	std::cout << "signals\t" << signals << std::endl;
 	std::cout << "samplings\t" << samplings << std::endl;
 	std::cout << "trials\t" << trials << std::endl;
 	std::cout << "stddev\tber\tcte" << std::endl;	// header
-	for(int i=0; i<20; i++){
-		const double stddev = (double)i/100; 
+	for(int i=0; i<40; i++){
+		const double stddev = (double)i/200; 
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
 		#pragma omp parallel for reduction(+:ber_sum,cte_sum)
