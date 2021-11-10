@@ -39,23 +39,23 @@ namespace cica {
 	/**
 	 * -0.5~0.5までの一様乱数からなる正方行列を生成
 	 */ 
-	matrix random_uniform_matrix(int size, const random_engine& engine){
+	matrix random_uniform_matrix(int size, random_engine& engine){
 		std::uniform_real_distribution<double> distribution(-0.5, 0.5);
 		auto generator = [&] (double dummy) {return distribution(engine);};
 		return matrix::Zero(size, size).unaryExpr(generator);
 	};
 
-	/**
-	 * ±1で表現されるランダムなビット行列を生成
-	 */ 
-	imatrix random_bits(const int rows, const int cols, const random_engine& engine){
-		std::uniform_int_distribution<int> distribution(0, 1);
-		auto generator = [&](double dummy) {
-			const int bit = distribution(engine);
-			return bit == 1 ? 1 : -1;
-		};
-		return imatrix::Zero(rows, cols).unaryExpr(generator);
-	}
+	// /**
+	//  * ±1で表現されるランダムなビット行列を生成
+	//  */ 
+	// imatrix random_bits(const int rows, const int cols, const random_engine& engine){
+	// 	std::uniform_int_distribution<int> distribution(0, 1);
+	// 	auto generator = [&](int dummy) {
+	// 		const int bit = distribution(engine);
+	// 		return bit == 1 ? 1 : -1;
+	// 	};
+	// 	return imatrix::Zero(rows, cols).unaryExpr(generator);
+	// }
 
 	/**
 	 * 正方行列でなくてはいけない
@@ -346,9 +346,9 @@ namespace cica {
 	 * A: 混合行列
 	 * W: 復元行列
 	 */
-	imatrix simple_circulant_P(const matrix& A, const matrix& W){
+	matrix simple_circulant_P(const matrix& A, const matrix& W){
 		matrix G = W * A;
-		imatrix P = imatrix::Zero(G.rows(), G.cols());
+		matrix P = matrix::Zero(G.rows(), G.cols());
 		#ifdef NPARALLELIZE
 			#pragma omp parallel for
 		#endif

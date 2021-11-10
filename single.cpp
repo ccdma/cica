@@ -16,7 +16,6 @@ int main(){
 	}
 	cica::matrix noncenterS = cica::vstack(s);
 	cica::matrix S = cica::centerize(noncenterS);
-	std::uniform_real_distribution<double> distribution(-0.5, 0.5);
 	cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	cica::matrix X = A * S;
 	auto result = cica::fastica(X);
