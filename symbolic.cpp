@@ -9,12 +9,12 @@ void test(const int signals, const int samplings, const int seed, const double n
 	std::vector<cica::vector> s(signals);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		s.at(i) = cica::chebyt_sampling(i+2, samplings, 0.1);
+		s.at(i) = cica::chebyt_sampling(2, samplings, (double)i/10+0.1);
 	}
 	cica::matrix noncenterS = cica::vstack(s);
 	cica::matrix S = cica::centerize(noncenterS);
 
-	const cica::matrix T = S * B.cast<double>();
+	const cica::matrix T = (S.array() * B.cast<double>().array()).matrix();
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * T + cica::gauss_matrix(signals, samplings, norm_scale, random_engine);
 
@@ -35,7 +35,7 @@ int main(){
 	const auto signals = 3;
 	const auto samplings = 1000;
 
-	test(signals, samplings, 1, 0.1);
+	test(signals, samplings, 0, 0.02);
 
 
 	return 0;

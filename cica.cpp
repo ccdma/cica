@@ -381,6 +381,7 @@ namespace cica {
 	 */ 
 	double cross_talk_error(const matrix& A, const matrix& W){
 		const matrix C = W * A;
+		std::cout << C << std::endl;
 		const int size = A.cols();
 		const auto row_cte = [](const vector& vec){
 			const vector absvec = vec.cwiseAbs();
@@ -404,6 +405,6 @@ namespace cica {
 	 * B1とB2のビット列(±1で表現)のBERを計算する
 	 */
 	double bit_error_rate(const imatrix& B1, const imatrix& B2){
-		return (B1-B2).cwiseAbs().mean()/2.0;
+		return (B1-B2).cwiseAbs().cast<double>().mean()/2.0;
 	}
 }
