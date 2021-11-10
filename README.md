@@ -8,3 +8,4 @@
 
 ## スパコン関連
 - [スーパーコンピュータシステムの使い方](https://web.kudpc.kyoto-u.ac.jp/manual/ja)
+- [利用者ポータル](https://web.kudpc.kyoto-u.ac.jp/portal/)
