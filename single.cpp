@@ -9,12 +9,11 @@ int main(){
 	const auto signals = 3;
 	const auto samplings = 1000;
 	
-	std::vector<cica::vector> s(signals);
+	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		s.at(i) = cica::chebyt_sampling(i+2, samplings, 0.1);
+		noncenterS.row(i) = cica::chebyt_sampling(i+2, samplings, 0.1);
 	}
-	cica::matrix noncenterS = cica::vstack(s);
 	cica::matrix S = cica::centerize(noncenterS);
 	cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	cica::matrix X = A * S;
