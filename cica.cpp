@@ -47,6 +47,7 @@ namespace cica {
 
 	/**
 	 * ±1で表現されるランダムなビット行列を生成
+	 * imatrixで返るのでdoubleなどを利用する場合、random_bits().cast<double>()などでcastすること
 	 */ 
 	imatrix random_bits(const int rows, const int cols, random_engine& engine){
 		std::uniform_int_distribution<int> distribution(0, 1);
@@ -346,9 +347,9 @@ namespace cica {
 	 * A: 混合行列
 	 * W: 復元行列
 	 */
-	matrix simple_circulant_P(const matrix& A, const matrix& W){
+	imatrix simple_circulant_P(const matrix& A, const matrix& W){
 		matrix G = W * A;
-		matrix P = matrix::Zero(G.rows(), G.cols());
+		imatrix P = imatrix::Zero(G.rows(), G.cols());
 		#ifdef NPARALLELIZE
 			#pragma omp parallel for
 		#endif
