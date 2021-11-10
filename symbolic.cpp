@@ -46,8 +46,8 @@ int main(){
 	std::cout << "samplings\t" << samplings << std::endl;
 	std::cout << "trials\t" << trials << std::endl;
 	std::cout << "stddev\tber\tcte" << std::endl;	// header
-	for(int i=0; i<40; i++){
-		const double stddev = (double)i/200; 
+	for(int i=0; i<150; i++){
+		const double stddev = (double)i/1000; 
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
 		#pragma omp parallel for reduction(+:ber_sum,cte_sum)
