@@ -401,9 +401,17 @@ namespace cica {
 
 	/**
 	 * BER(bit error rate)
-	 * B1とB2のビット列(±1で表現)のBERを計算する
+	 * B1とB2のビット列(±1で表現)のBERを計算する(横ベクトルの順序は予め対応付けすること)
 	 */
 	double bit_error_rate(const imatrix& B1, const imatrix& B2){
 		return (B1-B2).cwiseAbs().cast<double>().mean()/2.0;
+	}
+
+	/**
+	 * MSE(mean squared error,平均2乗誤差)
+	 * SとS2の2乗誤差を計算する(横ベクトルの順序は予め対応付けすること)
+	 */
+	double mean_squared_error(const matrix& S1, const matrix& S2){
+		return (S1-S2).array().pow(2).mean();
 	}
 }

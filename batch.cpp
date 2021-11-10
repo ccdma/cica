@@ -28,7 +28,7 @@ test_report test(const int signals, const int samplings, const int seed, const i
 	cica::matrix S2 = P.cast<double>().transpose() * result.Y;
 
 	// 平均2乗誤差
-	const double mse = (S2-S).array().pow(2).mean();
+	const double mse = cica::mean_squared_error(S, S2);
 	// ループ回数の平均
 	const double loop_ave = result.loop.cast<double>().mean();
 
