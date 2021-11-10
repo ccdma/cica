@@ -5,7 +5,7 @@
 #include "cica.cpp"
 
 int main(){
-	cica::reng reng(0);
+	cica::random_engine random_engine(0);
 	const auto signals = 3;
 	const auto samplings = 1000;
 	
@@ -16,8 +16,8 @@ int main(){
 	}
 	cica::matrix noncenterS = cica::vstack(s);
 	cica::matrix S = cica::centerize(noncenterS);
-
-	cica::matrix A = cica::rand_matrix(signals, reng);
+	std::uniform_real_distribution<double> distribution(-0.5, 0.5);
+	cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	cica::matrix X = A * S;
 	auto result = cica::fastica(X);
 	cica::matrix P = cica::simple_circulant_P(A, result.W);

@@ -6,7 +6,7 @@
 #include "cica.cpp"
 
 std::vector<double> test(const int signals, const int samplings, const int seed, const int chebyt_start_n){
-	cica::reng reng(seed);
+	cica::random_engine random_engine(seed);
 
 	std::vector<cica::vector> s(signals);
 	#pragma omp parallel for
@@ -16,7 +16,7 @@ std::vector<double> test(const int signals, const int samplings, const int seed,
 	cica::matrix noncenterS = cica::vstack(s);
 	cica::matrix S = cica::centerize(noncenterS);
 
-	cica::matrix A = cica::rand_matrix(signals, reng);
+	cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	cica::matrix X = A * S;
 	auto result = cica::fastica(X);
 	cica::matrix P = cica::simple_circulant_P(A, result.W);

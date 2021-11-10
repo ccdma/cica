@@ -28,9 +28,10 @@ namespace cica {
 	using vector = Eigen::VectorXd;
 	using cmatrix = Eigen::MatrixXcd;
 	using cvector = Eigen::VectorXcd;
+	using imatrix = Eigen::MatrixXi;
 	using ivector = Eigen::VectorXi;
 	using dcomplex = std::complex<double>;
-	using reng = std::mt19937; 
+	using random_engine = std::mt19937; 
 
 	const int FASTICA_LOOP_MAX = 500;
 	const int WRITE_LIMIT = 10000;
@@ -38,11 +39,23 @@ namespace cica {
 	/**
 	 * -0.5~0.5までの一様乱数からなる正方行列を生成
 	 */ 
-	matrix rand_matrix(int size, reng& engine){
+	matrix random_uniform_matrix(int size, const random_engine& engine){
 		std::uniform_real_distribution<double> distribution(-0.5, 0.5);
 		auto generator = [&] (double dummy) {return distribution(engine);};
 		return matrix::Zero(size, size).unaryExpr(generator);
 	};
+
+	/**
+	 * ±1で表現されるランダムなビット行列を生成
+	 */ 
+	imatrix random_bits(const int rows, const int cols, const random_engine& engine){
+		std::uniform_int_distribution<int> distribution(0, 1);
+		auto generator = [&](double dummy) {
+			const int bit = distribution(engine);
+			return bit == 1 ? 1 : -1;
+		};
+		return imatrix::Zero(rows, cols).unaryExpr(generator);
+	}
 
 	/**
 	 * 正方行列でなくてはいけない
@@ -95,7 +108,7 @@ namespace cica {
 	prev = now;
 #endif
 
-	cica::reng reng(0);
+	cica::random_engine random_engine(0);
 	const auto signals = X.rows();
 	const auto samplings = X.cols();
 	
@@ -125,7 +138,7 @@ namespace cica {
 
 	const auto I = X_whiten.rows();
 	Eigen::VectorXi loop(I);
-	auto B = rand_matrix(I, reng);
+	auto B = random_uniform_matrix(I, random_engine);
 
 	for(int i=0; i<I; i++){
 		normalize(B, i);
@@ -183,9 +196,9 @@ namespace cica {
 		cica::matrix B;
 
 		easi(const int size){
-			reng reng(0);
+			random_engine random_engine(0);
 			this->size = size;
-			B = rand_matrix(size, reng);
+			B = random_uniform_matrix(size, random_engine);
 		}
 
 		vector update(vector& x){
@@ -333,9 +346,9 @@ namespace cica {
 	 * A: 混合行列
 	 * W: 復元行列
 	 */
-	matrix simple_circulant_P(const matrix& A, const matrix& W){
+	imatrix simple_circulant_P(const matrix& A, const matrix& W){
 		matrix G = W * A;
-		matrix P = matrix::Zero(G.rows(), G.cols());
+		imatrix P = imatrix::Zero(G.rows(), G.cols());
 		#ifdef NPARALLELIZE
 			#pragma omp parallel for
 		#endif
@@ -379,7 +392,7 @@ namespace cica {
 	 * BER(bit error rate)
 	 * B1とB2のビット列(±1で表現)のBERを計算する
 	 */
-	double bit_error_rate(const matrix& B1, const matrix& B2){
+	double bit_error_rate(const imatrix& B1, const imatrix& B2){
 		return (B1-B2).cwiseAbs().mean()/2.0;
 	}
 }
