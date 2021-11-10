@@ -2,10 +2,15 @@
 #define NDEBUG
 #define NPROGLESS
 
-#include <vector>
 #include "cica.cpp"
 
-std::vector<double> test(const int signals, const int samplings, const int seed, const int chebyt_start_n){
+struct test_report {
+
+	double mse;
+	double loop_ave;
+};
+
+test_report test(const int signals, const int samplings, const int seed, const int chebyt_start_n){
 	cica::random_engine random_engine(seed);
 
 	std::vector<cica::vector> s(signals);
@@ -27,10 +32,7 @@ std::vector<double> test(const int signals, const int samplings, const int seed,
 	// ループ回数の平均
 	const double loop_ave = result.loop.cast<double>().mean();
 
-	std::vector<double> report(2);
-	report.at(0) = mse;
-	report.at(1) = loop_ave;
-	return report;
+	return test_report{.mse=mse, .loop_ave=loop_ave};
 }
 
 int main(){
@@ -48,8 +50,8 @@ int main(){
 		#pragma omp parallel for reduction(+:mse_sum,loop_ave_sum)
 		for (int i=0; i<times; i++){
 			auto report = test(signals, samplings, i, chebyt_start_n);
-			mse_sum += report.at(0);
-			loop_ave_sum += report.at(1);
+			mse_sum += report.mse;
+			loop_ave_sum += report.loop_ave;
 		}
 		std::cout << signals << "\t" << mse_sum/times << "\t" << loop_ave_sum/times << std::endl;
 	}
