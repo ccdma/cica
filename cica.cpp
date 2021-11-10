@@ -296,19 +296,6 @@ namespace cica {
 	}
 
 	/**
-	 * 縦にベクトルを積む
-	 * 必ず1つ以上を渡し、複数の場合、横幅は統一すること
-	 */
-	matrix vstack(std::vector<vector>& vecs){
-		const auto num = vecs.size();
-		matrix C(num, vecs.at(0).size());
-		for (int i=0; i<num; i++){
-			C.row(i) = vecs.at(i);
-		}
-		return C;
-	}
-
-	/**
 	 * n:次数、a0：初期値、len：長さ
 	 */
 	vector chebyt_sampling(const int n, const int len, const double a0){
