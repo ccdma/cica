@@ -41,22 +41,22 @@ int main(){
 	cica::random_engine random_engine(0);
 	const auto signals = 10;
 	const auto samplings = 1000;
-	const auto times = 100;
+	const auto trials = 100;
 	std::cout << "signals\t" << signals << std::endl;
 	std::cout << "samplings\t" << samplings << std::endl;
-	std::cout << "times\t" << times << std::endl;
+	std::cout << "trials\t" << trials << std::endl;
 	std::cout << "stddev\tber\tcte" << std::endl;	// header
 	for(int i=0; i<20; i++){
 		const double stddev = (double)i/100; 
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
 		#pragma omp parallel for reduction(+:ber_sum,cte_sum)
-		for (int i=0; i<times; i++){
+		for (int i=0; i<trials; i++){
 			const auto report = test(signals, samplings, i, stddev);
 			ber_sum += report.ber;
 			cte_sum += report.cte;
 		}
-		std::cout << stddev << "\t" << ber_sum/times << "\t" << cte_sum/times << std::endl;
+		std::cout << stddev << "\t" << ber_sum/trials << "\t" << cte_sum/trials << std::endl;
 	}
 	return 0;
 }

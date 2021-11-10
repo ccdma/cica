@@ -36,10 +36,10 @@ test_report test(const int signals, const int samplings, const int seed, const i
 
 int main(){
 	auto samplings = 10000;
-	const auto times = 100;
+	const auto trials = 100;
 	const auto chebyt_start_n = 2;
 	std::cout << "samplings\t" << samplings << std::endl;
-	std::cout << "times\t" << times << std::endl;
+	std::cout << "trials\t" << trials << std::endl;
 	std::cout << "chebyt_start_n\t" << chebyt_start_n << std::endl;
 	std::cout << "signals\tmse\tloop_ave" << std::endl;	// header
 	const auto sample_max = 200;
@@ -47,12 +47,12 @@ int main(){
 		double mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
 		#pragma omp parallel for reduction(+:mse_sum,loop_ave_sum)
-		for (int i=0; i<times; i++){
+		for (int i=0; i<trials; i++){
 			auto report = test(signals, samplings, i, chebyt_start_n);
 			mse_sum += report.mse;
 			loop_ave_sum += report.loop_ave;
 		}
-		std::cout << signals << "\t" << mse_sum/times << "\t" << loop_ave_sum/times << std::endl;
+		std::cout << signals << "\t" << mse_sum/trials << "\t" << loop_ave_sum/trials << std::endl;
 	}
 	return 0;
 }
