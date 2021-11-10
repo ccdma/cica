@@ -24,12 +24,12 @@ int main(){
     const int plot_num = std::min(1000, samplings);
 	std::stringstream ss;
 	cica::matrix SR = S.rightCols(plot_num);
-	cica::write_matrix(ss, S);
+	cica::write_matrix(ss, SR);
 	ss << std::endl;
 	cica::matrix XR = X.rightCols(plot_num);
-	cica::write_matrix(ss, X);
+	cica::write_matrix(ss, XR);
 	ss << std::endl;
-	cica::matrix YR = S2.rightCols(plot_num);
+	cica::matrix YR = result.Y.rightCols(plot_num);
 	cica::write_matrix(ss, YR);
 
 	cica::save_stream(ss, "result.csv");

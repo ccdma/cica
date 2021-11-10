@@ -222,17 +222,17 @@ namespace cica {
 	class easi {
 	
 	public:
-		cica::matrix B;
+		cica::matrix W;
 
 		easi(const int size): size(size){
 			random_engine random_engine(0);
-			B = random_uniform_matrix(size, random_engine);
+			W = random_uniform_matrix(size, random_engine);
 		}
 
 		vector update(const vector& x){
-			matrix y = B * x;
+			matrix y = W * x;
 			matrix V = y * y.transpose() - matrix::Identity(size, size) + g(y) * y.transpose() - y * g(y).transpose();
-			B = B - EASI_MU * V * B;
+			W = W - EASI_MU * V * W;
 			return y.col(0);
 		}
 
@@ -253,8 +253,10 @@ namespace cica {
 	/**
 	 * EASI(バッチ処理)
 	 * シュミレーション時はfasticaと同じように扱える分、easiクラスよりも利用しやすい
+	 * 
+	 * final_recover: trueの場合、学習後の復元行列でXを再計算する。逆にfalseの場合、resultの復元信号は復元行列に対応しないので注意すること
 	 */ 
-	easi_result batch_easi(const matrix& X) {
+	easi_result batch_easi(const matrix& X, const bool final_recover=false) {
 		easi easi(X.rows());
 		matrix Y(X.rows(), X.cols());
 		for (int i=0; i<X.cols(); i++){
@@ -262,7 +264,10 @@ namespace cica {
 			vector y = easi.update(x);
 			Y.col(i) = y;
 		}
-		return easi_result{.W = easi.B, .Y = Y};
+		if (final_recover){
+			Y = easi.W * X;
+		}
+		return easi_result{.W = easi.W, .Y = Y};
 	}
     
 	std::vector<double> to_std_vector(const vector& v1){
