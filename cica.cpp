@@ -333,7 +333,7 @@ namespace cica {
 	 * A: 混合行列
 	 * W: 復元行列
 	 */
-	matrix simple_circulant_P(matrix& A, matrix& W){
+	matrix simple_circulant_P(const matrix& A, const matrix& W){
 		matrix G = W * A;
 		matrix P = matrix::Zero(G.rows(), G.cols());
 		#ifdef NPARALLELIZE
@@ -347,5 +347,39 @@ namespace cica {
 			P(i, maxId) = (x > 0) ? 1 : -1;
 		}
 		return P;
+	}
+
+	/**
+	 * CTE(cross talk error)
+	 * A: 混合行列
+	 * W: 復元行列
+	 * https://www.jstage.jst.go.jp/article/elex/5/14/5_14_510/_pdf
+	 */ 
+	double cross_talk_error(const matrix& A, const matrix& W){
+		const matrix C = W * A;
+		const int size = A.cols();
+		const auto row_cte = [](const vector& vec){
+			const vector absvec = vec.cwiseAbs();
+			const double max = absvec.maxCoeff();
+			const double sum = absvec.sum();
+			return sum/max-1;
+		};
+		double cte_sum = 0.0;
+		#ifdef NPARALLELIZE
+			#pragma omp parallel for reduction(+:cte_sum)
+		#endif
+		for (int i=0; i<size; i++){
+			cte_sum += row_cte(C.row(i));
+			cte_sum += row_cte(C.col(i));
+		}
+		return cte_sum;
+	}
+
+	/**
+	 * BER(bit error rate)
+	 * B1とB2のビット列(±1で表現)のBERを計算する
+	 */
+	double bit_error_rate(const matrix& B1, const matrix& B2){
+		return (B1-B2).cwiseAbs().mean()/2.0;
 	}
 }
