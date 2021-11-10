@@ -95,7 +95,7 @@ namespace cica {
 	/**
 	 * X: 内部で中心化は行うが、すでに中心化されていることが望ましい（元信号Sの中心化ができていれば、混合されたXも自然と中心化されるはず）
 	 */
-	fastica_result fastica(matrix& X) {
+	fastica_result fastica(const matrix& X) {
 
 #ifndef NPROGLESS
 	std::chrono::system_clock::time_point start, prev, now;
@@ -201,7 +201,7 @@ namespace cica {
 			B = random_uniform_matrix(size, random_engine);
 		}
 
-		vector update(vector& x){
+		vector update(const vector& x){
 			matrix y = B * x;
 			matrix V = y * y.transpose() - matrix::Identity(size, size) + g(y) * y.transpose() - y * g(y).transpose();
 			B = B - EASI_MU * V * B;
@@ -212,7 +212,7 @@ namespace cica {
 		const double EASI_MU = 0.001953125;
 		int size;
 
-		matrix g(matrix y){
+		matrix g(const matrix& y){
 			return -y.array().tanh().matrix();
 		}
 	};
@@ -222,7 +222,7 @@ namespace cica {
 		matrix Y;	// 復元信号
 	};
 
-	easi_result batch_easi(matrix& X) {
+	easi_result batch_easi(const matrix& X) {
 		easi easi(X.rows());
 		matrix Y(X.rows(), X.cols());
 		for (int i=0; i<X.cols(); i++){
@@ -233,12 +233,12 @@ namespace cica {
 		return easi_result{.W = easi.B, .Y = Y};
 	}
     
-	std::vector<double> to_std_vector(vector& v1){
+	std::vector<double> to_std_vector(const vector& v1){
 		std::vector<double> v2(v1.data(), v1.data() + v1.size());
 		return v2;
 	}
 
-	void write_matrix(std::stringstream& ss, matrix& mat){
+	void write_matrix(std::stringstream& ss, const matrix& mat){
 		const auto signals = mat.rows();
 		const auto samplings = mat.cols();
 		for (int i=0; i<signals; i++){
