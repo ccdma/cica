@@ -41,7 +41,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 int main(){
 	cica::random_engine random_engine(0);
 	const auto signals = 3;
-	const auto samplings = 1000;
+	const auto samplings = 10000;
 	const auto times = 100;
 	std::cout << "samplings\t" << samplings << std::endl;
 	std::cout << "times\t" << times << std::endl;
@@ -52,7 +52,7 @@ int main(){
 		double cte_sum = 0.0;
 		#pragma omp parallel for reduction(+:ber_sum,cte_sum)
 		for (int i=0; i<times; i++){
-			const auto report = test(signals, samplings, 0, stddev);
+			const auto report = test(signals, samplings, i, stddev);
 			ber_sum += report.ber;
 			cte_sum += report.cte;
 		}
