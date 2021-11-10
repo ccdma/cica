@@ -26,7 +26,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * T + cica::gauss_matrix(signals, samplings, norm_stddev, random_engine);
 
-	auto res = cica::fastica(X);
+	auto res = cica::batch_easi(X);
 	const cica::imatrix P = cica::estimate_circulant_matrix(A, res.W);
 
 	const cica::matrix S2 = P.cast<double>().transpose() * res.Y;
@@ -39,7 +39,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 
 int main(){
 	cica::random_engine random_engine(0);
-	const auto signals = 10;
+	const auto signals = 2;
 	const auto samplings = 1000;
 	const auto times = 100;
 	std::cout << "signals\t" << signals << std::endl;

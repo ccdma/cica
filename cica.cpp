@@ -173,9 +173,9 @@ namespace cica {
 
 			const auto collen = X_whiten.cols();
 			matrix ave(I, collen);
-			#ifdef NPARALLELIZE
-				#pragma omp parallel for
-			#endif
+#ifdef NPARALLELIZE
+			#pragma omp parallel for
+#endif
 			for(int k=0; k<collen; k++){	// 不動点法による更新
 				const vector x = X_whiten.col(k);
 				ave.col(k) = g(x.dot(B.col(i)))*x - g2(x.dot(B.col(i)))*B.col(i);  
@@ -224,9 +224,8 @@ namespace cica {
 	public:
 		cica::matrix B;
 
-		easi(const int size){
+		easi(const int size): size(size){
 			random_engine random_engine(0);
-			this->size = size;
 			B = random_uniform_matrix(size, random_engine);
 		}
 
@@ -239,7 +238,7 @@ namespace cica {
 
 	private:
 		const double EASI_MU = 0.001953125;
-		int size;
+		const int size;
 
 		matrix g(const matrix& y){
 			return -y.array().tanh().matrix();
@@ -318,6 +317,7 @@ namespace cica {
 	}
 
 	/**
+	 * 第一種チェビシェフ多項式による系列（漸化式）
 	 * n:次数、a0：初期値、len：長さ
 	 */
 	vector chebyt_sampling(const int n, const int len, const double a0){
@@ -336,6 +336,9 @@ namespace cica {
 	vector sine_sampling(const double w, const int len){
 		vector S(len);
 		const double gap = 0.1;
+#ifdef NPARALLELIZE
+		#pragma omp parallel for
+#endif
 		for (int i=0; i<len; i++){
 			S(i) = std::sin(w*(double)i*gap);
 		}
@@ -369,9 +372,9 @@ namespace cica {
 	imatrix estimate_circulant_matrix(const matrix& A, const matrix& W){
 		matrix G = W * A;
 		imatrix P = imatrix::Zero(G.rows(), G.cols());
-		#ifdef NPARALLELIZE
-			#pragma omp parallel for
-		#endif
+#ifdef NPARALLELIZE
+		#pragma omp parallel for
+#endif
 		for(int i=0; i<G.rows(); i++){
 			vector row = G.row(i);
 			vector::Index maxId;
@@ -398,9 +401,9 @@ namespace cica {
 			return sum/max-1;
 		};
 		double cte_sum = 0.0;
-		#ifdef NPARALLELIZE
-			#pragma omp parallel for reduction(+:cte_sum)
-		#endif
+#ifdef NPARALLELIZE
+		#pragma omp parallel for reduction(+:cte_sum)
+#endif
 		for (int i=0; i<size; i++){
 			cte_sum += row_cte(C.row(i));
 			cte_sum += row_cte(C.col(i));
