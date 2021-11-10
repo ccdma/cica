@@ -45,17 +45,17 @@ namespace cica {
 		return matrix::Zero(size, size).unaryExpr(generator);
 	};
 
-	// /**
-	//  * ±1で表現されるランダムなビット行列を生成
-	//  */ 
-	// imatrix random_bits(const int rows, const int cols, const random_engine& engine){
-	// 	std::uniform_int_distribution<int> distribution(0, 1);
-	// 	auto generator = [&](int dummy) {
-	// 		const int bit = distribution(engine);
-	// 		return bit == 1 ? 1 : -1;
-	// 	};
-	// 	return imatrix::Zero(rows, cols).unaryExpr(generator);
-	// }
+	/**
+	 * ±1で表現されるランダムなビット行列を生成
+	 */ 
+	imatrix random_bits(const int rows, const int cols, random_engine& engine){
+		std::uniform_int_distribution<int> distribution(0, 1);
+		auto generator = [&](int dummy) {
+			const int bit = distribution(engine);
+			return bit == 1 ? 1 : -1;
+		};
+		return imatrix::Zero(rows, cols).unaryExpr(generator);
+	}
 
 	/**
 	 * 正方行列でなくてはいけない
