@@ -13,4 +13,4 @@ set -x
 # automatically
 # export OMP_NUM_THREADS=$QSUB_THREADS
 
-./batch
+./batch.out
