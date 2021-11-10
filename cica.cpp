@@ -72,7 +72,7 @@ namespace cica {
 	 * 正方行列でなくてはいけない
 	 * i番目を0~i-1番目までの縦ベクトルの直行空間に射影＋長さの正規化
 	 */
-	void normalize(matrix& M, int i){
+	void _normalize(matrix& M, int i){
 		const auto size = M.cols();
 		if (i>0){
 			M.col(i) = M.col(i) - M.block(0, 0, size, i) * M.block(0, 0, size, i).transpose() * M.col(i);
@@ -104,7 +104,16 @@ namespace cica {
 	};
 
 	/**
-	 * X: 内部で中心化は行うが、すでに中心化されていることが望ましい（元信号Sの中心化ができていれば、混合されたXも自然と中心化されるはず）
+	 * implements of FastICA
+	 * 
+	 * X: 観測信号
+	 * 
+	 * Xについて、内部で中心化は行うが先にに中心化されていることが望ましい（元信号Sの中心化ができていれば、混合されたXも自然と中心化されるはず）
+	 * 		→ 中心化されているものを扱っていれば、2乗和誤差などの計算でズレが生じない
+	 * 
+	 * [reference]
+	 * https://ieeexplore.ieee.org/document/761722
+	 * http://manabukano.brilliant-future.net/document/text-ICA.pdf
 	 */
 	fastica_result fastica(const matrix& X) {
 
@@ -152,7 +161,7 @@ namespace cica {
 	auto B = random_uniform_matrix(I, random_engine);
 
 	for(int i=0; i<I; i++){
-		normalize(B, i);
+		_normalize(B, i);
 	}
 
 	assert((B * B.transpose()).isApprox(matrix::Identity(B.rows(), B.cols())));
@@ -172,7 +181,7 @@ namespace cica {
 				ave.col(k) = g(x.dot(B.col(i)))*x - g2(x.dot(B.col(i)))*B.col(i);  
 			}
 			B.col(i) = ave.rowwise().mean();
-			normalize(B, i);
+			_normalize(B, i);
 			const auto diff = std::abs(prevBi.dot(B.col(i)));
 			if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
 #ifndef NPROGLESS
@@ -201,6 +210,15 @@ namespace cica {
 		return fastica_result{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
 	};
 
+	/**
+	 * implements of EASI
+	 * 
+	 * X: 観測信号
+	 * 
+	 * [reference]
+	 * https://ieeexplore.ieee.org/document/553476
+	 * https://www.ieice.org/ken/download/200703059ATF/
+	 */ 
 	class easi {
 	
 	public:
@@ -233,6 +251,10 @@ namespace cica {
 		matrix Y;	// 復元信号
 	};
 
+	/**
+	 * EASI(バッチ処理)
+	 * シュミレーション時はfasticaと同じように扱える分、easiクラスよりも利用しやすい
+	 */ 
 	easi_result batch_easi(const matrix& X) {
 		easi easi(X.rows());
 		matrix Y(X.rows(), X.cols());
