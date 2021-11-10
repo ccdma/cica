@@ -381,7 +381,6 @@ namespace cica {
 	 */ 
 	double cross_talk_error(const matrix& A, const matrix& W){
 		const matrix C = W * A;
-		std::cout << C << std::endl;
 		const int size = A.cols();
 		const auto row_cte = [](const vector& vec){
 			const vector absvec = vec.cwiseAbs();
