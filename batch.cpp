@@ -13,12 +13,11 @@ struct test_report {
 test_report test(const int signals, const int samplings, const int seed, const int chebyt_start_n){
 	cica::random_engine random_engine(seed);
 
-	std::vector<cica::vector> s(signals);
+	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		s.at(i) = cica::chebyt_sampling(i+chebyt_start_n, samplings, 0.2);
+		noncenterS.row(i) = cica::chebyt_sampling(i+chebyt_start_n, samplings, 0.2);
 	}
-	cica::matrix noncenterS = cica::vstack(s);
 	cica::matrix S = cica::centerize(noncenterS);
 
 	cica::matrix A = cica::random_uniform_matrix(signals, random_engine);

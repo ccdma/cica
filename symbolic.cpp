@@ -15,12 +15,11 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	cica::random_engine random_engine(seed);
 	std::uniform_real_distribution<double> distribution(-0.9, 0.9);
 	const cica::imatrix B = cica::random_bits(signals, samplings, random_engine);
-	std::vector<cica::vector> s(signals);
+	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		s.at(i) = cica::chebyt_sampling(2, samplings, distribution(random_engine));
+		noncenterS.row(i) = cica::chebyt_sampling(2, samplings, distribution(random_engine));
 	}
-	cica::matrix noncenterS = cica::vstack(s);
 	cica::matrix S = cica::centerize(noncenterS);
 
 	const cica::matrix T = (S.array() * B.cast<double>().array()).matrix();
@@ -43,6 +42,7 @@ int main(){
 	const auto signals = 10;
 	const auto samplings = 1000;
 	const auto times = 100;
+	std::cout << "signals\t" << signals << std::endl;
 	std::cout << "samplings\t" << samplings << std::endl;
 	std::cout << "times\t" << times << std::endl;
 	std::cout << "stddev\tber\tcte" << std::endl;	// header
