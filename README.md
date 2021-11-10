@@ -1,21 +1,10 @@
 ## compile
 
-```
-$ g++ ica.cpp -I ./include/ -fopenmp  
-```
-- `-O3 -mtune=native -march=native`は最適化系のオプション
 - `-lblas`でblas利用（eigenのinclude前に`#define EIGEN_USE_BLAS`すること）
-  - https://eigen.tuxfamily.org/dox/TopicUsingBlasLapack.html
+  - [Using BLAS/LAPACK from Eigen](https://eigen.tuxfamily.org/dox/TopicUsingBlasLapack.html)
 
 ## exec
+- 環境変数`OMP_NUM_THREADS=6`でスレッド数を指定可能
 
-```
-$ OMP_NUM_THREADS=6 ./a.out
-```
-
-## ssh
-
-```
-$ rsync -avc . b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
-$ ssh b36697@cinnamon.kudpc.kyoto-u.ac.jp
-```
+## スパコン関連
+- [スーパーコンピュータシステムの使い方](https://web.kudpc.kyoto-u.ac.jp/manual/ja)
