@@ -3,7 +3,7 @@
 #define NPROGLESS
 
 #include <vector>
-#include "ica.cpp"
+#include "cica.cpp"
 
 std::vector<double> test(const int signals, const int samplings, const int seed, const int chebyt_start_n){
 	cica::reng reng(seed);

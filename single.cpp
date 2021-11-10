@@ -2,7 +2,7 @@
 // #define NPROGLESS
 
 #include <vector>
-#include "ica.cpp"
+#include "cica.cpp"
 
 int main(){
 	cica::reng reng(0);
