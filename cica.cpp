@@ -173,7 +173,7 @@ namespace cica {
 
 			const auto collen = X_whiten.cols();
 			matrix ave(I, collen);
-#ifdef NPARALLELIZE
+#ifndef NPARALLELIZE
 			#pragma omp parallel for
 #endif
 			for(int k=0; k<collen; k++){	// 不動点法による更新
@@ -341,7 +341,7 @@ namespace cica {
 	vector sine_sampling(const double w, const int len){
 		vector S(len);
 		const double gap = 0.1;
-#ifdef NPARALLELIZE
+#ifndef NPARALLELIZE
 		#pragma omp parallel for
 #endif
 		for (int i=0; i<len; i++){
@@ -377,7 +377,7 @@ namespace cica {
 	imatrix estimate_circulant_matrix(const matrix& A, const matrix& W){
 		matrix G = W * A;
 		imatrix P = imatrix::Zero(G.rows(), G.cols());
-#ifdef NPARALLELIZE
+#ifndef NPARALLELIZE
 		#pragma omp parallel for
 #endif
 		for(int i=0; i<G.rows(); i++){
@@ -406,7 +406,7 @@ namespace cica {
 			return sum/max-1;
 		};
 		double cte_sum = 0.0;
-#ifdef NPARALLELIZE
+#ifndef NPARALLELIZE
 		#pragma omp parallel for reduction(+:cte_sum)
 #endif
 		for (int i=0; i<size; i++){
