@@ -20,13 +20,13 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	for (int i=0; i<signals; i++){
 		noncenterS.row(i) = cica::chebyt_sampling(2, samplings, distribution(random_engine));
 	}
-	cica::matrix S = cica::centerize(noncenterS);
+	const cica::matrix S = cica::centerize(noncenterS);
 
 	const cica::matrix T = (S.array() * B.cast<double>().array()).matrix();
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * T + cica::gauss_matrix(signals, samplings, norm_stddev, random_engine);
 
-	auto res = cica::fastica(X);
+	const auto res = cica::fastica(X);
 	const cica::imatrix P = cica::estimate_circulant_matrix(A, res.W);
 
 	const cica::matrix S2 = P.cast<double>().transpose() * res.Y;

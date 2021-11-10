@@ -18,13 +18,13 @@ test_report test(const int signals, const int samplings, const int seed, const i
 	for (int i=0; i<signals; i++){
 		noncenterS.row(i) = cica::chebyt_sampling(i+chebyt_start_n, samplings, 0.2);
 	}
-	cica::matrix S = cica::centerize(noncenterS);
+	const cica::matrix S = cica::centerize(noncenterS);
 
-	cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
-	cica::matrix X = A * S;
-	auto result = cica::fastica(X);
-	cica::imatrix P = cica::estimate_circulant_matrix(A, result.W);
-	cica::matrix S2 = P.cast<double>().transpose() * result.Y;
+	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
+	const cica::matrix X = A * S;
+	const auto result = cica::fastica(X);
+	const cica::imatrix P = cica::estimate_circulant_matrix(A, result.W);
+	const cica::matrix S2 = P.cast<double>().transpose() * result.Y;
 
 	// 平均2乗誤差
 	const double mse = cica::mean_squared_error(S, S2);
@@ -35,7 +35,7 @@ test_report test(const int signals, const int samplings, const int seed, const i
 }
 
 int main(){
-	auto samplings = 10000;
+	const auto samplings = 10000;
 	const auto trials = 100;
 	const auto chebyt_start_n = 2;
 	std::cout << "samplings\t" << samplings << std::endl;
@@ -48,7 +48,7 @@ int main(){
 		double loop_ave_sum = 0.0;
 		#pragma omp parallel for reduction(+:mse_sum,loop_ave_sum)
 		for (int i=0; i<trials; i++){
-			auto report = test(signals, samplings, i, chebyt_start_n);
+			const auto report = test(signals, samplings, i, chebyt_start_n);
 			mse_sum += report.mse;
 			loop_ave_sum += report.loop_ave;
 		}
