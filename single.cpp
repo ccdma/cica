@@ -19,7 +19,7 @@ int main(){
 	cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	cica::matrix X = A * S;
 	auto result = cica::fastica(X);
-	cica::imatrix P = cica::simple_circulant_P(A, result.W);
+	cica::imatrix P = cica::estimate_circulant_matrix(A, result.W);
 	cica::matrix S2 = P.cast<double>().transpose() * result.Y;
 
     const int plot_num = std::min(1000, samplings);

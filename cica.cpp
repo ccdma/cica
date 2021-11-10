@@ -46,6 +46,16 @@ namespace cica {
 	};
 
 	/**
+	 * ガウス分布による行列を生成
+	 * stddev: 標準偏差
+	 */ 
+	matrix gauss_matrix(const int rows, const int cols, const double stddev, random_engine& engine){
+		std::normal_distribution<double> distribution(0.0, stddev);
+		auto generator = [&] (double dummy) {return distribution(engine);};
+		return matrix::Zero(rows, cols).unaryExpr(generator);
+	};
+
+	/**
 	 * ±1で表現されるランダムなビット行列を生成
 	 * imatrixで返るのでdoubleなどを利用する場合、random_bits().cast<double>()などでcastすること
 	 */ 
@@ -347,7 +357,7 @@ namespace cica {
 	 * A: 混合行列
 	 * W: 復元行列
 	 */
-	imatrix simple_circulant_P(const matrix& A, const matrix& W){
+	imatrix estimate_circulant_matrix(const matrix& A, const matrix& W){
 		matrix G = W * A;
 		imatrix P = imatrix::Zero(G.rows(), G.cols());
 		#ifdef NPARALLELIZE
