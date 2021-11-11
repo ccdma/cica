@@ -2,7 +2,7 @@
 #define NDEBUG
 #define NPROGLESS
 
-#define COMMIT_ID 
+#define COMMIT_ID "undefined"
 
 #include <vector>
 #include "cica.cpp"
@@ -44,6 +44,7 @@ int main(){
 	const auto samplings = 1000;
 	const auto chebyt_n = 2;
 	const auto trials = 100;
+	std::cout << "commit" << "\t" << COMMIT_ID << std::endl;
 	std::cout << "chebyt_n(fixed)" << "\t" << chebyt_n << std::endl;
 	std::cout << "trials" << "\t" << trials << std::endl;
 	std::cout

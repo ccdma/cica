@@ -2,6 +2,8 @@
 #define NDEBUG
 #define NPROGLESS
 
+#define COMMIT_ID "undefined"
+
 #include "cica.cpp"
 
 struct test_report {
@@ -38,6 +40,7 @@ int main(){
 	const auto samplings = 10000;
 	const auto trials = 100;
 	const auto chebyt_start_n = 2;
+	std::cout << "commit" << "\t" << COMMIT_ID << std::endl;
 	std::cout << "samplings" << "\t" << samplings << std::endl;
 	std::cout << "trials" << "\t" << trials << std::endl;
 	std::cout << "chebyt_start_n" << "\t" << chebyt_start_n << std::endl;

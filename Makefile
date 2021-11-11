@@ -1,13 +1,14 @@
 CC := g++
 CFLAGS := -I ./include/ -fopenmp -O3 -mtune=native -march=native -std=c++11
-COMMIT_ID := $(sh git rev-parse --short HEAD)
-UNSTAGED := $(sh if [ `git status --porcelain --untracked-files=no` -n 1 ]; then echo true;)
 SRCS := batch.cpp
 SRCS += single.cpp
 SRCS += symbolic.cpp
 
+COMMIT_ID := $(shell git rev-parse --short HEAD)
+UNSTAGED := $(shell status=`git status --porcelain --untracked-files=no`; if [ -n "$status" ]; then echo "_unstaged"; fi)
+
 $(SRCS:.cpp=):
-	$(CC) $(CFLAGS) $@.cpp -o $@.out
+	$(CC) $(CFLAGS) $@.cpp -o $@.out -DCOMMID_ID=$(COMMIT_ID)$(UNSTAGED)
 
 clean:
 	rm -f *.out *.csv
