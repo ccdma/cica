@@ -78,8 +78,9 @@ int main(){
 		<< "ncte" << "\t"
 		<< "time"
 	<< std::endl;	// header
+	for(int signals=50; signals<500; signals+=50){
 	for(int i=0; i<6; i++){
-		const int signals = 10000 * (int)std::pow(2, i);
+		const int samplings = 10000 * (int)std::pow(2, i);
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
 		double ncte_sum = 0.0;
@@ -110,6 +111,6 @@ int main(){
 			<< ncte_sum/trials << "\t" 
 			<< time/trials
 		<< std::endl;
-	}
+	}}
 	return 0;
 }
