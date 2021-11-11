@@ -50,7 +50,7 @@ int main(){
 		<< "signals" << "\t" 
 		<< "mse" << "\t"
 		<< "loop_ave"
-		<< std::endl;	// header
+	<< std::endl;	// header
 	const auto sample_max = 200;
 	for(int signals=2; signals<sample_max; signals++){
 		double mse_sum = 0.0;

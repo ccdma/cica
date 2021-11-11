@@ -18,12 +18,12 @@ struct test_report {
 
 test_report test(const int signals, const int samplings, const int seed, const double norm_stddev, const int chebyt_n){
 	cica::random_engine random_engine(seed);
-	std::uniform_real_distribution<double> distribution(-0.9, 0.9);
+	std::uniform_real_distribution<double> distribution(-0.99, 0.99);
 	const cica::imatrix B = cica::random_bits(signals, samplings, random_engine);
 	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		noncenterS.row(i) = cica::chebyt_sampling(chebyt_n, samplings, distribution(random_engine));	// 変更する場合はヘッダも変更する
+		noncenterS.row(i) = cica::chebyt_sampling(chebyt_n+i, samplings, distribution(random_engine));	// 変更する場合はヘッダも変更する
 	}
 	const cica::matrix S = cica::centerize(noncenterS);
 
@@ -34,11 +34,11 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const auto res = cica::fastica(X);
 	const cica::imatrix P = cica::estimate_circulant_matrix(A, res.W);
 
-	const cica::matrix S2 = P.cast<double>().transpose() * res.Y;
-	const cica::imatrix RB = (S2.array() * S.array()).sign().matrix().cast<int>();
+	const cica::matrix Z = P.cast<double>().transpose() * res.Y;
+	const cica::imatrix RB = (Z.array() * S.array()).sign().matrix().cast<int>();
 	const double ber = cica::bit_error_rate(B, RB);
 	const double cte = cica::cross_talk_error(A, res.W);
-	const double mse = cica::mean_squared_error(S, S2);
+	const double mse = cica::mean_squared_error(T, Z);
 	const double loop_ave = res.loop.cast<double>().mean();
 
 	return test_report{.ber=ber, .cte=cte, .mse=mse, .loop_ave=loop_ave};
