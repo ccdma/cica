@@ -417,6 +417,19 @@ namespace cica {
 	}
 
 	/**
+	 * CTEを異なる信号数でも比較できるように正規化したもの
+	 * 
+	 * size-1で割っているのは正解部分は-1で既に除かれているから
+	 * 
+	 * (referenceなし)
+	 */
+	double normal_cross_talk_error(const matrix& A, const matrix& W){
+		const auto cte = cross_talk_error(A, W);
+		const int size = A.cols();
+		return cte/((size-1)*size);
+	}
+
+	/**
 	 * BER(bit error rate)
 	 * B1とB2のビット列(±1で表現)のBERを計算する(横ベクトルの順序は予め対応付けすること)
 	 */

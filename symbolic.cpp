@@ -12,6 +12,7 @@ struct test_report {
 
 	double ber;
 	double cte;
+	double ncte;
 	double mse;
 	double loop_ave;
 };
@@ -38,10 +39,11 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const cica::imatrix RB = (Z.array() * S.array()).sign().matrix().cast<int>();
 	const double ber = cica::bit_error_rate(B, RB);
 	const double cte = cica::cross_talk_error(A, res.W);
+	const double ncte = cica::normal_cross_talk_error(A, res.W);
 	const double mse = cica::mean_squared_error(T, Z);
 	const double loop_ave = res.loop.cast<double>().mean();
 
-	return test_report{.ber=ber, .cte=cte, .mse=mse, .loop_ave=loop_ave};
+	return test_report{.ber=ber, .cte=cte, .ncte=ncte, .mse=mse, .loop_ave=loop_ave};
 }
 
 int main(){
@@ -59,19 +61,22 @@ int main(){
 		<< "mse" << "\t"
 		<< "loop_ave" << "\t"
 		<< "ber" << "\t"
-		<< "cte"
+		<< "cte" << "\t"
+		<< "ncte"
 	<< std::endl;	// header
 	for(int signals=10; signals<150; signals+=20){
 		for(double stddev=0; stddev<0.15; stddev+=0.005){ 
 			double ber_sum = 0.0;
 			double cte_sum = 0.0;
+			double ncte_sum = 0.0;
 			double mse_sum = 0.0;
 			double loop_ave_sum = 0.0;
-			#pragma omp parallel for reduction(+:ber_sum,cte_sum,mse_sum,loop_ave_sum)
+			#pragma omp parallel for reduction(+:ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum)
 			for (int i=0; i<trials; i++){
 				const auto report = test(signals, samplings, i, stddev, chebyt_n);
 				ber_sum += report.ber;
 				cte_sum += report.cte;
+				ncte_sum += report.ncte;
 				mse_sum += report.mse;
 				loop_ave_sum += report.loop_ave;
 			}
@@ -82,7 +87,8 @@ int main(){
 				<< mse_sum/trials << "\t"
 				<< loop_ave_sum/trials << "\t"
 				<< ber_sum/trials << "\t" 
-				<< cte_sum/trials
+				<< cte_sum/trials << "\t" 
+				<< ncte_sum/trials
 			<< std::endl;
 		}
 	}
