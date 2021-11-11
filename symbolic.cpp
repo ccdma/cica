@@ -21,8 +21,7 @@ struct test_report {
 };
 
 test_report test(const int signals, const int samplings, const int seed, const double norm_stddev, const int chebyt_n){
-	std::chrono::system_clock::time_point start;
-	start = std::chrono::system_clock::now();
+	const auto start = std::chrono::system_clock::now();
 
 	cica::random_engine random_engine(seed);
 	std::uniform_real_distribution<double> distribution(-0.99, 0.99);
@@ -51,7 +50,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const double correlaion_mse = cica::mean_squared_error(CT, cica::matrix::Identity(CT.rows(), CT.cols()));
 	const double loop_ave = res.loop.cast<double>().mean();
 
-	const double time = std::chrono::duration_cast<std::chrono::seconds>(start-std::chrono::system_clock::now()).count();
+	const double time = (double)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()-start).count();
 	return test_report{.ber=ber, .cte=cte, .ncte=ncte, .mse=mse,
 		 .loop_ave=loop_ave, .correlaion_mse=correlaion_mse, .time=time};
 }
@@ -76,7 +75,7 @@ int main(){
 		<< "ber" << "\t"
 		<< "cte" << "\t"
 		<< "ncte" << "\t"
-		<< "time"
+		<< "time(ms)"
 	<< std::endl;	// header
 	for(int signals=50; signals<500; signals+=50){
 	for(int i=0; i<6; i++){
@@ -87,7 +86,7 @@ int main(){
 		double mse_sum = 0.0;
 		double correlaion_mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
-		double time = 0;
+		double time = 0.0;
 		#pragma omp parallel for reduction(+:ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,time)
 		for (int i=0; i<trials; i++){
 			const auto report = test(signals, samplings, i, stddev, chebyt_n);
