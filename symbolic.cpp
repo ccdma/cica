@@ -2,6 +2,8 @@
 #define NDEBUG
 #define NPROGLESS
 
+#define COMMIT_ID 
+
 #include <vector>
 #include "cica.cpp"
 
