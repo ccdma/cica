@@ -8,7 +8,7 @@ COMMIT_ID := $(shell git rev-parse --short HEAD)
 UNSTAGED := $(shell if [ `git status -s | wc -l` -ne 0 ]; then echo "_unstaged"; fi )
 
 $(SRCS:.cpp=):
-	$(CC) $(CFLAGS) $@.cpp -o $@.out -DCOMMID_ID=$(COMMIT_ID)$(UNSTAGED)
+	$(CC) $(CFLAGS) $@.cpp -o $@.out -DCOMMIT_ID=\"$(COMMIT_ID)$(UNSTAGED)\"
 
 clean:
 	rm -f *.out *.csv

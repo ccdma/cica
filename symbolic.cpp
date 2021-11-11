@@ -2,9 +2,10 @@
 #define NDEBUG
 #define NPROGLESS
 
-#define COMMIT_ID "undefined"
+#ifndef COMMIT_ID
+	#define COMMIT_ID "undefined"
+#endif
 
-#include <vector>
 #include "cica.cpp"
 
 struct test_report {
