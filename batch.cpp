@@ -38,10 +38,14 @@ int main(){
 	const auto samplings = 10000;
 	const auto trials = 100;
 	const auto chebyt_start_n = 2;
-	std::cout << "samplings\t" << samplings << std::endl;
-	std::cout << "trials\t" << trials << std::endl;
-	std::cout << "chebyt_start_n\t" << chebyt_start_n << std::endl;
-	std::cout << "signals\tmse\tloop_ave" << std::endl;	// header
+	std::cout << "samplings" << "\t" << samplings << std::endl;
+	std::cout << "trials" << "\t" << trials << std::endl;
+	std::cout << "chebyt_start_n" << "\t" << chebyt_start_n << std::endl;
+	std::cout 
+		<< "signals" << "\t" 
+		<< "mse" << "\t"
+		<< "loop_ave"
+		<< std::endl;	// header
 	const auto sample_max = 200;
 	for(int signals=2; signals<sample_max; signals++){
 		double mse_sum = 0.0;
@@ -52,7 +56,11 @@ int main(){
 			mse_sum += report.mse;
 			loop_ave_sum += report.loop_ave;
 		}
-		std::cout << signals << "\t" << mse_sum/trials << "\t" << loop_ave_sum/trials << std::endl;
+		std::cout 
+			<< signals << "\t" 
+			<< mse_sum/trials << "\t" 
+			<< loop_ave_sum/trials 
+		<< std::endl;
 	}
 	return 0;
 }
