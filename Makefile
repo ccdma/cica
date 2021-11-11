@@ -5,7 +5,7 @@ SRCS += single.cpp
 SRCS += symbolic.cpp
 
 COMMIT_ID := $(shell git rev-parse --short HEAD)
-UNSTAGED := $(shell if [ `git status -s | wc -l` -ne 0 ]; then echo "_unstaged"; fi )
+UNSTAGED := $(shell if [ `git status -s -uno | wc -l` -ne 0 ]; then echo "_unstaged"; fi )
 
 $(SRCS:.cpp=):
 	$(CC) $(CFLAGS) $@.cpp -o $@.out -DCOMMIT_ID=\"$(COMMIT_ID)$(UNSTAGED)\"
