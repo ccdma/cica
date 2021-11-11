@@ -15,6 +15,7 @@ struct test_report {
 	double ncte;
 	double mse;
 	double loop_ave;
+	double correlaion_mse;
 };
 
 test_report test(const int signals, const int samplings, const int seed, const double norm_stddev, const int chebyt_n){
@@ -41,9 +42,11 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const double cte = cica::cross_talk_error(A, res.W);
 	const double ncte = cica::normal_cross_talk_error(A, res.W);
 	const double mse = cica::mean_squared_error(T, Z);
+	const cica::matrix CT = cica::correlation_matrix(T);
+	const double correlaion_mse = cica::mean_squared_error(CT, cica::matrix::Identity(CT.rows(), CT.cols()));
 	const double loop_ave = res.loop.cast<double>().mean();
 
-	return test_report{.ber=ber, .cte=cte, .ncte=ncte, .mse=mse, .loop_ave=loop_ave};
+	return test_report{.ber=ber, .cte=cte, .ncte=ncte, .mse=mse, .loop_ave=loop_ave, .correlaion_mse=correlaion_mse};
 }
 
 int main(){
@@ -59,6 +62,7 @@ int main(){
 		<< "samplings" << "\t"
 		<< "stddev" << "\t"
 		<< "mse" << "\t"
+		<< "correlaion_mse" << "\t"
 		<< "loop_ave" << "\t"
 		<< "ber" << "\t"
 		<< "cte" << "\t"
@@ -70,8 +74,9 @@ int main(){
 			double cte_sum = 0.0;
 			double ncte_sum = 0.0;
 			double mse_sum = 0.0;
+			double correlaion_mse_sum = 0.0;
 			double loop_ave_sum = 0.0;
-			#pragma omp parallel for reduction(+:ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum)
+			#pragma omp parallel for reduction(+:ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum)
 			for (int i=0; i<trials; i++){
 				const auto report = test(signals, samplings, i, stddev, chebyt_n);
 				ber_sum += report.ber;
@@ -79,12 +84,14 @@ int main(){
 				ncte_sum += report.ncte;
 				mse_sum += report.mse;
 				loop_ave_sum += report.loop_ave;
+				correlaion_mse_sum += report.correlaion_mse;
 			}
 			std::cout
 				<< signals << "\t"
 				<< samplings << "\t"
 				<< stddev << "\t"
 				<< mse_sum/trials << "\t"
+				<< correlaion_mse_sum/trials << "\t"
 				<< loop_ave_sum/trials << "\t"
 				<< ber_sum/trials << "\t" 
 				<< cte_sum/trials << "\t" 
