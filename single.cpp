@@ -15,6 +15,7 @@ int main(){
 		noncenterS.row(i) = cica::chebyt_sampling(i+2, samplings, 0.1);
 	}
 	const cica::matrix S = cica::centerize(noncenterS);
+	std::cout << cica::correlation_matrix(noncenterS) << std::endl;
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * S;
 	auto result = cica::fastica(X);

@@ -444,4 +444,31 @@ namespace cica {
 	double mean_squared_error(const matrix& S1, const matrix& S2){
 		return (S1-S2).array().pow(2).mean();
 	}
+
+	/**
+	 * 横ベクトル同士の内積を分散で正規化したものを行列にまとめて返します
+	 * 		→ 完全に直交する場合は単位行列になるはず
+	 * return: Xの縦の長さ分の正方行列
+	 */ 
+	matrix correlation_matrix(const matrix& X, const bool normalize=true){
+		const int size = X.rows();
+		const int n = X.cols();
+		matrix M(size, size);
+		for (int i=0; i<size; i++){
+			for(int j=0; j<i+1; j++){
+				const vector rowi = X.row(i);
+				const vector rowj = X.row(j);
+				double correlation = rowi.dot(rowj) / (double)n;	// 相関
+				if (normalize){
+					const double var = rowi.cwiseAbs().dot(rowj.cwiseAbs()) / (double)n;	// 分散
+					correlation /= var;
+				}
+				M(i,j) = correlation;
+				if(j!=i){ // 対角成分以外なら
+					M(j,i) = correlation;
+				}
+			}
+		}
+		return M;
+	}
 }
