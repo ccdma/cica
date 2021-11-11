@@ -446,8 +446,11 @@ namespace cica {
 	}
 
 	/**
-	 * 横ベクトル同士の内積を分散で正規化したものを行列にまとめて返します
+	 * 横ベクトル同士の内積を計算
+	 * 
+	 * normalize=true: 分散で正規化する
 	 * 		→ 完全に直交する場合は単位行列になるはず
+	 * 
 	 * return: Xの縦の長さ分の正方行列
 	 */ 
 	matrix correlation_matrix(const matrix& X, const bool normalize=true){
