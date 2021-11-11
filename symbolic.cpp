@@ -6,6 +6,7 @@
 	#define COMMIT_ID "undefined"
 #endif
 
+#include <cmath>
 #include "cica.cpp"
 
 struct test_report {
@@ -16,9 +17,13 @@ struct test_report {
 	double mse;
 	double loop_ave;
 	double correlaion_mse;
+	double time;
 };
 
 test_report test(const int signals, const int samplings, const int seed, const double norm_stddev, const int chebyt_n){
+	std::chrono::system_clock::time_point start;
+	start = std::chrono::system_clock::now();
+
 	cica::random_engine random_engine(seed);
 	std::uniform_real_distribution<double> distribution(-0.99, 0.99);
 	const cica::imatrix B = cica::random_bits(signals, samplings, random_engine);
@@ -46,12 +51,16 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const double correlaion_mse = cica::mean_squared_error(CT, cica::matrix::Identity(CT.rows(), CT.cols()));
 	const double loop_ave = res.loop.cast<double>().mean();
 
-	return test_report{.ber=ber, .cte=cte, .ncte=ncte, .mse=mse, .loop_ave=loop_ave, .correlaion_mse=correlaion_mse};
+	const double time = std::chrono::duration_cast<std::chrono::seconds>(start-std::chrono::system_clock::now()).count();
+	return test_report{.ber=ber, .cte=cte, .ncte=ncte, .mse=mse,
+		 .loop_ave=loop_ave, .correlaion_mse=correlaion_mse, .time=time};
 }
 
 int main(){
 	cica::random_engine random_engine(0);
-	const auto samplings = 1000;
+	const auto samplings = 10000;
+	const auto signals = 200;
+	const auto stddev = 0.0;
 	const auto chebyt_n = 2;
 	const auto trials = 100;
 	std::cout << "commit" << "\t" << COMMIT_ID << std::endl;
@@ -66,38 +75,41 @@ int main(){
 		<< "loop_ave" << "\t"
 		<< "ber" << "\t"
 		<< "cte" << "\t"
-		<< "ncte"
+		<< "ncte" << "\t"
+		<< "time"
 	<< std::endl;	// header
-	for(int signals=10; signals<150; signals+=20){
-		for(double stddev=0; stddev<0.15; stddev+=0.005){ 
-			double ber_sum = 0.0;
-			double cte_sum = 0.0;
-			double ncte_sum = 0.0;
-			double mse_sum = 0.0;
-			double correlaion_mse_sum = 0.0;
-			double loop_ave_sum = 0.0;
-			#pragma omp parallel for reduction(+:ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum)
-			for (int i=0; i<trials; i++){
-				const auto report = test(signals, samplings, i, stddev, chebyt_n);
-				ber_sum += report.ber;
-				cte_sum += report.cte;
-				ncte_sum += report.ncte;
-				mse_sum += report.mse;
-				loop_ave_sum += report.loop_ave;
-				correlaion_mse_sum += report.correlaion_mse;
-			}
-			std::cout
-				<< signals << "\t"
-				<< samplings << "\t"
-				<< stddev << "\t"
-				<< mse_sum/trials << "\t"
-				<< correlaion_mse_sum/trials << "\t"
-				<< loop_ave_sum/trials << "\t"
-				<< ber_sum/trials << "\t" 
-				<< cte_sum/trials << "\t" 
-				<< ncte_sum/trials
-			<< std::endl;
+	for(int i=0; i<6; i++){
+		const int signals = 10000 * (int)std::pow(2, i);
+		double ber_sum = 0.0;
+		double cte_sum = 0.0;
+		double ncte_sum = 0.0;
+		double mse_sum = 0.0;
+		double correlaion_mse_sum = 0.0;
+		double loop_ave_sum = 0.0;
+		double time = 0;
+		#pragma omp parallel for reduction(+:ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,time)
+		for (int i=0; i<trials; i++){
+			const auto report = test(signals, samplings, i, stddev, chebyt_n);
+			ber_sum += report.ber;
+			cte_sum += report.cte;
+			ncte_sum += report.ncte;
+			mse_sum += report.mse;
+			loop_ave_sum += report.loop_ave;
+			correlaion_mse_sum += report.correlaion_mse;
+			time += report.time;
 		}
+		std::cout
+			<< signals << "\t"
+			<< samplings << "\t"
+			<< stddev << "\t"
+			<< mse_sum/trials << "\t"
+			<< correlaion_mse_sum/trials << "\t"
+			<< loop_ave_sum/trials << "\t"
+			<< ber_sum/trials << "\t" 
+			<< cte_sum/trials << "\t" 
+			<< ncte_sum/trials << "\t" 
+			<< time/trials
+		<< std::endl;
 	}
 	return 0;
 }
