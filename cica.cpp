@@ -256,7 +256,7 @@ namespace cica {
 	 * 
 	 * final_recover: trueの場合、学習後の復元行列でXを再計算する。逆にfalseの場合、resultの復元信号は復元行列に対応しないので注意すること
 	 */ 
-	easi_result batch_easi(const matrix& X, const bool final_recover=false) {
+	easi_result batch_easi(const matrix& X, const bool final_recover=true) {
 		easi easi(X.rows());
 		matrix Y(X.rows(), X.cols());
 		for (int i=0; i<X.cols(); i++){
