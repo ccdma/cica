@@ -17,6 +17,7 @@ struct test_report {
 	double mse;
 	double loop_ave;
 	double correlaion_mse;
+	double res_correlaion_mse;
 	double time;
 };
 
@@ -49,15 +50,16 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const double mse = cica::mean_squared_error(T, Z);
 	const cica::matrix CT = cica::correlation_matrix(T);
 	const double correlaion_mse = cica::mean_squared_error(CT, cica::matrix::Identity(CT.rows(), CT.cols()));
+	const cica::matrix CY = cica::correlation_matrix(res.Y);
+	const double res_correlaion_mse = cica::mean_squared_error(CY, cica::matrix::Identity(CY.rows(), CY.cols()));
 	const double loop_ave = res.loop.cast<double>().mean();
 
 	const double time = (double)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()-start).count();
 	return test_report{.ber=ber, .cte=cte, .ncte=ncte, .mse=mse,
-		 .loop_ave=loop_ave, .correlaion_mse=correlaion_mse, .time=time};
+		 .loop_ave=loop_ave, .correlaion_mse=correlaion_mse, .res_correlaion_mse=res_correlaion_mse, .time=time};
 }
 
 int main(){
-	cica::random_engine random_engine(0);
 	const auto samplings = 10000;
 	const auto signals = 200;
 	const auto stddev = 0.0;
@@ -72,6 +74,7 @@ int main(){
 		<< "stddev" << "\t"
 		<< "mse" << "\t"
 		<< "correlaion_mse" << "\t"
+		<< "res_correlaion_mse" << "\t"
 		<< "loop_ave" << "\t"
 		<< "ber" << "\t"
 		<< "cte" << "\t"
@@ -88,9 +91,10 @@ int main(){
 		double ncte_sum = 0.0;
 		double mse_sum = 0.0;
 		double correlaion_mse_sum = 0.0;
+		double res_correlaion_mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
 		double time = 0.0;
-		#pragma omp parallel for reduction(+:complete,ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,time)
+		#pragma omp parallel for reduction(+:complete,ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,res_correlaion_mse_sum,time)
 		for (int seed=0; seed<trials; seed++){
 			try {
 				const auto report = test(signals, samplings, seed, stddev, chebyt_n);
@@ -100,6 +104,7 @@ int main(){
 				mse_sum += report.mse;
 				loop_ave_sum += report.loop_ave;
 				correlaion_mse_sum += report.correlaion_mse;
+				res_correlaion_mse_sum += report.res_correlaion_mse;
 				time += report.time;
 				complete += 1;
 			} catch (cica::exception::base e) {}
@@ -110,6 +115,7 @@ int main(){
 			<< stddev << "\t"
 			<< mse_sum/trials << "\t"
 			<< correlaion_mse_sum/trials << "\t"
+			<< res_correlaion_mse_sum/trials << "\t"
 			<< loop_ave_sum/trials << "\t"
 			<< ber_sum/trials << "\t" 
 			<< cte_sum/trials << "\t" 
