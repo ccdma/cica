@@ -1,4 +1,4 @@
-#define NPARALLELIZE
+// #define NPARALLELIZE
 #define NDEBUG
 #define NPROGLESS
 
@@ -61,7 +61,7 @@ int main(){
 	const auto signals = 200;
 	const auto stddev = 0.0;
 	const auto chebyt_n = 2;
-	const auto trials = 100;
+	const auto trials = 10;
 	std::cout << "commit" << "\t" << COMMIT_ID << std::endl;
 	std::cout << "chebyt_n(fixed)" << "\t" << chebyt_n << std::endl;
 	std::cout << "trials" << "\t" << trials << std::endl;
@@ -78,8 +78,8 @@ int main(){
 		<< "time(ms)"
 	<< std::endl;	// header
 	for(int signals=50; signals<500; signals+=50){
-	for(int i=0; i<6; i++){
-		const int samplings = 10000 * (int)std::pow(2, i);
+	for(double i=0; i<8; i+=0.2){
+		const int samplings = 1000 * (double)std::pow(2, i);
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
 		double ncte_sum = 0.0;
@@ -88,8 +88,8 @@ int main(){
 		double loop_ave_sum = 0.0;
 		double time = 0.0;
 		#pragma omp parallel for reduction(+:ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,time)
-		for (int i=0; i<trials; i++){
-			const auto report = test(signals, samplings, i, stddev, chebyt_n);
+		for (int seed=0; seed<trials; seed++){
+			const auto report = test(signals, samplings, seed, stddev, chebyt_n);
 			ber_sum += report.ber;
 			cte_sum += report.cte;
 			ncte_sum += report.ncte;
