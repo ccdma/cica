@@ -364,83 +364,83 @@ namespace cica::fastica {
 	result fastica(const matrix& X, const objective_func& func=kum4) {
 
 #ifndef NPROGLESS
-	std::chrono::system_clock::time_point start, prev, now;
-	start = std::chrono::system_clock::now();
-	prev = start;
-	now = start;
-	std::cout 
-	<< "[PROGLESS] start fastica session"
-	<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
-	prev = now;
+		std::chrono::system_clock::time_point start, prev, now;
+		start = std::chrono::system_clock::now();
+		prev = start;
+		now = start;
+		std::cout 
+		<< "[PROGLESS] start fastica session"
+		<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
+		prev = now;
 #endif
 
-	cica::random_engine random_engine(0);
-	const auto signals = X.rows();
-	const auto samplings = X.cols();
-	
-	const matrix X_center = centerize(X);
-	const matrix X_cov = cov(X_center);	// 分散共分散行列を作成
+		cica::random_engine random_engine(0);
+		const auto signals = X.rows();
+		const auto samplings = X.cols();
+		
+		const matrix X_center = centerize(X);
+		const matrix X_cov = cov(X_center);	// 分散共分散行列を作成
 
-	Eigen::SelfAdjointEigenSolver<matrix> es(X_cov);
-	if (es.info() != Eigen::Success) abort();
+		Eigen::SelfAdjointEigenSolver<matrix> es(X_cov);
+		if (es.info() != Eigen::Success) abort();
 
-	const vector lambdas = es.eigenvalues().real();
-	const matrix P = es.eigenvectors().real();
-	const matrix Atilda = lambdas.cwiseSqrt().asDiagonal().inverse() * P.transpose();
-	const matrix X_whiten = Atilda * X_center;	// 無相関化
-
-#ifndef NPROGLESS
-	now = std::chrono::system_clock::now();
-	std::cout 
-	<< "[PROGLESS] start fixed point method"
-	<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
-	prev = now;
-#endif
-
-	assert(cov(X_whiten).isApprox(matrix::Identity(cov(X_whiten).rows(), cov(X_whiten).cols())));
-
-	const auto g = func.g;
-	const auto g2 = func.g2;
-
-	const auto I = X_whiten.rows();
-	Eigen::VectorXi loop(I);
-	auto B = random_uniform_matrix(I, random_engine);
-
-	for(int i=0; i<I; i++){
-		_normalize(B, i);
-	}
-
-	assert((B * B.transpose()).isApprox(matrix::Identity(B.rows(), B.cols())));
-
-	for(int i=0; i<I; i++){
-		for(int j=0; j<LOOP_MAX; j++){
-			loop(i) = j+1;	// ループ回数を記録
-			const vector prevBi = B.col(i);	// 値のコピー
-
-			const auto collen = X_whiten.cols();
-			matrix ave(I, collen);
-#ifndef NPARALLELIZE
-			#pragma omp parallel for
-#endif
-			for(int k=0; k<collen; k++){	// 不動点法による更新
-				const vector x = X_whiten.col(k);
-				ave.col(k) = g(x.dot(B.col(i)))*x - g2(x.dot(B.col(i)))*B.col(i);  
-			}
-			B.col(i) = ave.rowwise().mean();
-			_normalize(B, i);
-			const auto diff = std::abs(prevBi.dot(B.col(i)));
-			if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
-#ifndef NPROGLESS
-			if (j==LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
-#endif
-		}
+		const vector lambdas = es.eigenvalues().real();
+		const matrix P = es.eigenvectors().real();
+		const matrix Atilda = lambdas.cwiseSqrt().asDiagonal().inverse() * P.transpose();
+		const matrix X_whiten = Atilda * X_center;	// 無相関化
 
 #ifndef NPROGLESS
 		now = std::chrono::system_clock::now();
-		std::cout
-		<< "[PROGLESS] end loop " << i
+		std::cout 
+		<< "[PROGLESS] start fixed point method"
 		<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
 		prev = now;
+#endif
+
+		assert(cov(X_whiten).isApprox(matrix::Identity(cov(X_whiten).rows(), cov(X_whiten).cols())));
+
+		const auto g = func.g;
+		const auto g2 = func.g2;
+
+		const auto I = X_whiten.rows();
+		Eigen::VectorXi loop(I);
+		auto B = random_uniform_matrix(I, random_engine);
+
+		for(int i=0; i<I; i++){
+			_normalize(B, i);
+		}
+
+		assert((B * B.transpose()).isApprox(matrix::Identity(B.rows(), B.cols())));
+
+		for(int i=0; i<I; i++){
+			for(int j=0; j<LOOP_MAX; j++){
+				loop(i) = j+1;	// ループ回数を記録
+				const vector prevBi = B.col(i);	// 値のコピー
+
+				const auto collen = X_whiten.cols();
+				matrix ave(I, collen);
+#ifndef NPARALLELIZE
+				#pragma omp parallel for
+#endif
+				for(int k=0; k<collen; k++){	// 不動点法による更新
+					const vector x = X_whiten.col(k);
+					ave.col(k) = g(x.dot(B.col(i)))*x - g2(x.dot(B.col(i)))*B.col(i);  
+				}
+				B.col(i) = ave.rowwise().mean();
+				_normalize(B, i);
+				const auto diff = std::abs(prevBi.dot(B.col(i)));
+				if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
+#ifndef NPROGLESS
+				if (j==LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
+#endif
+			}
+
+#ifndef NPROGLESS
+			now = std::chrono::system_clock::now();
+			std::cout
+			<< "[PROGLESS] end loop " << i
+			<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
+			prev = now;
 #endif
 		}
 		matrix Y = B.transpose() * X_whiten;
