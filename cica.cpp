@@ -33,7 +33,7 @@ namespace cica {
 	using dcomplex = std::complex<double>;
 	using random_engine = std::mt19937; 
 
-	const int FASTICA_LOOP_MAX = 500;
+	const int FASTICA_LOOP_MAX = 100;
 	const int WRITE_LIMIT = 10000;
 
 	/**
