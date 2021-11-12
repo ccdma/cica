@@ -320,8 +320,8 @@ namespace cica::fastica {
 	 * 目的関数に使用する関数g
 	 */ 
 	struct objective_func {
-		const std::function<double(double)> g;
-		const std::function<double(double)> g2;
+		const std::function<double(double)> g;	// 不動点法におけるg()
+		const std::function<double(double)> g2;	// g()の微分
 
 		objective_func(): 
 			objective_func(
@@ -331,8 +331,8 @@ namespace cica::fastica {
 		{};
 
 		objective_func(
-			const std::function<double(double)> g,	// 不動点法におけるg()
-			const std::function<double(double)> g2	// g()の微分
+			const std::function<double(double)> g,
+			const std::function<double(double)> g2
 		): g(g), g2(g2) {};
 	};
 
