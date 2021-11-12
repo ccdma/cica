@@ -37,7 +37,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * T + cica::gauss_matrix(signals, samplings, norm_stddev, random_engine);
 
-	const auto res = cica::fastica::fastica(X, cica::fastica::cpnscp1);
+	const auto res = cica::fastica::fastica(X);
 	const cica::imatrix P = cica::estimate_circulant_matrix(A, res.W);
 
 	const cica::matrix Z = P.cast<double>().transpose() * res.Y;

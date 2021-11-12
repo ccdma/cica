@@ -22,6 +22,30 @@
 #include <cassert>
 #include <Eigen/Dense>
 
+namespace cica::util {
+
+	const int WRITE_LIMIT = 10000;
+
+	void write_matrix(std::stringstream& ss, const matrix& mat){
+		const auto signals = mat.rows();
+		const auto samplings = mat.cols();
+		for (int i=0; i<signals; i++){
+			for (int j=0;j<samplings;j++){
+				ss << mat(i,j);
+				if (std::min<int>(WRITE_LIMIT, samplings) == j+1) break;
+				ss << ",";
+			}
+			ss << std::endl;
+		}
+	}
+
+	void save_stream(std::stringstream& ss, std::string filename){
+		std::ofstream outputfile(filename);
+		outputfile << ss.rdbuf();
+		outputfile.close();
+	}
+}
+
 namespace cica {
 
 	using matrix = Eigen::MatrixXd;
@@ -32,8 +56,6 @@ namespace cica {
 	using ivector = Eigen::VectorXi;
 	using dcomplex = std::complex<double>;
 	using random_engine = std::mt19937; 
-
-	const int WRITE_LIMIT = 10000;
 
 	/**
 	 * -0.5~0.5までの一様乱数からなる正方行列を生成
@@ -88,25 +110,6 @@ namespace cica {
 	std::vector<double> to_std_vector(const vector& v1){
 		std::vector<double> v2(v1.data(), v1.data() + v1.size());
 		return v2;
-	}
-
-	void write_matrix(std::stringstream& ss, const matrix& mat){
-		const auto signals = mat.rows();
-		const auto samplings = mat.cols();
-		for (int i=0; i<signals; i++){
-			for (int j=0;j<samplings;j++){
-				ss << mat(i,j);
-				if (std::min<int>(WRITE_LIMIT, samplings) == j+1) break;
-				ss << ",";
-			}
-			ss << std::endl;
-		}
-	}
-
-	void save_stream(std::stringstream& ss, std::string filename){
-		std::ofstream outputfile(filename);
-		outputfile << ss.rdbuf();
-		outputfile.close();
 	}
 
 	enum class cheby {

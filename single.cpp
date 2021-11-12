@@ -1,7 +1,6 @@
 #define NDEBUG
 // #define NPROGLESS
 
-#include <vector>
 #include "cica.cpp"
 
 int main(){
@@ -24,14 +23,14 @@ int main(){
     const int plot_num = std::min(1000, samplings);
 	std::stringstream ss;
 	const cica::matrix SR = S.rightCols(plot_num);
-	cica::write_matrix(ss, SR);
+	cica::util::write_matrix(ss, SR);
 	ss << std::endl;
 	const cica::matrix XR = X.rightCols(plot_num);
-	cica::write_matrix(ss, XR);
+	cica::util::write_matrix(ss, XR);
 	ss << std::endl;
 	const cica::matrix YR = result.Y.rightCols(plot_num);
-	cica::write_matrix(ss, YR);
+	cica::util::write_matrix(ss, YR);
 
-	cica::save_stream(ss, "result.csv");
+	cica::util::save_stream(ss, "result.csv");
 	return 0;
 }
