@@ -29,7 +29,8 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		noncenterS.row(i) = cica::chebyt_sampling(chebyt_n, samplings, distribution(random_engine));	// 変更する場合はヘッダも変更する
+		const int additional_n = i%10;
+		noncenterS.row(i) = cica::chebyt_sampling(chebyt_n+additional_n, samplings, distribution(random_engine));	// 変更する場合はヘッダも変更する
 	}
 	const cica::matrix S = cica::centerize(noncenterS);
 

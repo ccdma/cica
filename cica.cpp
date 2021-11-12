@@ -22,6 +22,18 @@
 #include <cassert>
 #include <Eigen/Dense>
 
+namespace cica {
+
+	using matrix = Eigen::MatrixXd;
+	using vector = Eigen::VectorXd;
+	using cmatrix = Eigen::MatrixXcd;
+	using cvector = Eigen::VectorXcd;
+	using imatrix = Eigen::MatrixXi;
+	using ivector = Eigen::VectorXi;
+	using dcomplex = std::complex<double>;
+	using random_engine = std::mt19937; 
+}
+
 namespace cica::util {
 
 	const int WRITE_LIMIT = 10000;
@@ -47,15 +59,6 @@ namespace cica::util {
 }
 
 namespace cica {
-
-	using matrix = Eigen::MatrixXd;
-	using vector = Eigen::VectorXd;
-	using cmatrix = Eigen::MatrixXcd;
-	using cvector = Eigen::VectorXcd;
-	using imatrix = Eigen::MatrixXi;
-	using ivector = Eigen::VectorXi;
-	using dcomplex = std::complex<double>;
-	using random_engine = std::mt19937; 
 
 	/**
 	 * -0.5~0.5までの一様乱数からなる正方行列を生成
