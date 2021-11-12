@@ -299,7 +299,7 @@ namespace cica::fastica {
 	 * 正方行列でなくてはいけない
 	 * i番目を0~i-1番目までの縦ベクトルの直行空間に射影＋長さの正規化
 	 */
-	void _normalize(matrix& M, int i){
+	void _normalize(matrix& M, const int i){
 		const auto size = M.cols();
 		if (i>0){
 			M.col(i) = M.col(i) - M.block(0, 0, size, i) * M.block(0, 0, size, i).transpose() * M.col(i);
@@ -335,6 +335,16 @@ namespace cica::fastica {
 
 	// 4次キュムラント
 	const auto kum4 = objective_func();
+
+	const auto cpnscp1 = objective_func(
+		[](double x) { return   39.7*std::pow(x, 3) - 14.5*x; },
+		[](double x) { return 39.7*3*std::pow(x, 2) -   14.5; }
+	);
+
+	const auto cpnscp2 = objective_func(
+		[](double x) { return   158.7*std::pow(x, 5) -   136.5*std::pow(x, 3) + 23.2*x; },
+		[](double x) { return 158.7*5*std::pow(x, 4) - 136.5*3*std::pow(x, 2) +   23.2; }
+	);
 
 	/**
 	 * implements of FastICA
