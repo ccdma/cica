@@ -37,7 +37,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * T + cica::gauss_matrix(signals, samplings, norm_stddev, random_engine);
 
-	const auto res = cica::batch_easi(X, true);
+	const auto res = cica::fastica(X);
 	const cica::imatrix P = cica::estimate_circulant_matrix(A, res.W);
 
 	const cica::matrix Z = P.cast<double>().transpose() * res.Y;
@@ -48,7 +48,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const double mse = cica::mean_squared_error(T, Z);
 	const cica::matrix CT = cica::correlation_matrix(T);
 	const double correlaion_mse = cica::mean_squared_error(CT, cica::matrix::Identity(CT.rows(), CT.cols()));
-	const double loop_ave = 0.0; //res.loop.cast<double>().mean();
+	const double loop_ave = res.loop.cast<double>().mean();
 
 	const double time = (double)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()-start).count();
 	return test_report{.ber=ber, .cte=cte, .ncte=ncte, .mse=mse,
