@@ -78,8 +78,8 @@ int main(){
 		<< "time(ms)"
 	<< std::endl;	// header
 	for(int signals=50; signals<500; signals+=50){
-	for(double i=0.0; i<8; i+=0.2){
-		const int samplings = 1000 * (double)std::pow(2, i);
+	for(double i=0.0; i<8; i+=1.0){
+		const int samplings = 1000 * (int)std::pow(2, i);
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
 		double ncte_sum = 0.0;
