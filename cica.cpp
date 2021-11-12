@@ -33,7 +33,6 @@ namespace cica {
 	using dcomplex = std::complex<double>;
 	using random_engine = std::mt19937; 
 
-	const int FASTICA_LOOP_MAX = 100;
 	const int WRITE_LIMIT = 10000;
 
 	/**
@@ -69,18 +68,6 @@ namespace cica {
 	}
 
 	/**
-	 * 正方行列でなくてはいけない
-	 * i番目を0~i-1番目までの縦ベクトルの直行空間に射影＋長さの正規化
-	 */
-	void _normalize(matrix& M, int i){
-		const auto size = M.cols();
-		if (i>0){
-			M.col(i) = M.col(i) - M.block(0, 0, size, i) * M.block(0, 0, size, i).transpose() * M.col(i);
-		}
-		M.col(i) = M.col(i) / std::sqrt(M.col(i).squaredNorm());
-	}
-
-	/**
 	 * 系列の中心化を行う
 	 * 横に並ぶ値の平均が0になるように修正される
 	 */ 
@@ -97,178 +84,6 @@ namespace cica {
 		return (M_center * M_center.transpose()) / double(M_center.cols() - 1);
 	}
 
-	struct fastica_result {
-		matrix W;	// 復元行列
-		matrix Y;	// 復元信号
-		ivector loop; 	// 不動点法のループ回数
-	};
-
-	/**
-	 * implements of FastICA
-	 * 
-	 * X: 観測信号
-	 * 
-	 * Xについて、内部で中心化は行うが先にに中心化されていることが望ましい（元信号Sの中心化ができていれば、混合されたXも自然と中心化されるはず）
-	 * 		→ 中心化されているものを扱っていれば、2乗和誤差などの計算でズレが生じない
-	 * 
-	 * [reference]
-	 * https://ieeexplore.ieee.org/document/761722
-	 * http://manabukano.brilliant-future.net/document/text-ICA.pdf
-	 */
-	fastica_result fastica(const matrix& X) {
-
-#ifndef NPROGLESS
-	std::chrono::system_clock::time_point start, prev, now;
-	start = std::chrono::system_clock::now();
-	prev = start;
-	now = start;
-	std::cout 
-	<< "[PROGLESS] start fastica session"
-	<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
-	prev = now;
-#endif
-
-	cica::random_engine random_engine(0);
-	const auto signals = X.rows();
-	const auto samplings = X.cols();
-	
-	const matrix X_center = centerize(X);
-	const matrix X_cov = cov(X_center);	// 分散共分散行列を作成
-
-	Eigen::SelfAdjointEigenSolver<matrix> es(X_cov);
-	if (es.info() != Eigen::Success) abort();
-
-	const vector lambdas = es.eigenvalues().real();
-	const matrix P = es.eigenvectors().real();
-	const matrix Atilda = lambdas.cwiseSqrt().asDiagonal().inverse() * P.transpose();
-	const matrix X_whiten = Atilda * X_center;	// 無相関化
-
-#ifndef NPROGLESS
-	now = std::chrono::system_clock::now();
-	std::cout 
-	<< "[PROGLESS] start fixed point method"
-	<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
-	prev = now;
-#endif
-
-	assert(cov(X_whiten).isApprox(matrix::Identity(cov(X_whiten).rows(), cov(X_whiten).cols())));
-
-	const auto g = [](double bx) { return std::pow(bx, 3); };	// 不動点法に4次キュムラントを使用する
-	const auto g2 = [](double bx) { return 3*std::pow(bx, 2); };	// g()の微分
-
-	const auto I = X_whiten.rows();
-	Eigen::VectorXi loop(I);
-	auto B = random_uniform_matrix(I, random_engine);
-
-	for(int i=0; i<I; i++){
-		_normalize(B, i);
-	}
-
-	assert((B * B.transpose()).isApprox(matrix::Identity(B.rows(), B.cols())));
-
-	for(int i=0; i<I; i++){
-		for(int j=0; j<FASTICA_LOOP_MAX; j++){
-			loop(i) = j+1;	// ループ回数を記録
-			const vector prevBi = B.col(i);	// 値のコピー
-
-			const auto collen = X_whiten.cols();
-			matrix ave(I, collen);
-#ifndef NPARALLELIZE
-			#pragma omp parallel for
-#endif
-			for(int k=0; k<collen; k++){	// 不動点法による更新
-				const vector x = X_whiten.col(k);
-				ave.col(k) = g(x.dot(B.col(i)))*x - g2(x.dot(B.col(i)))*B.col(i);  
-			}
-			B.col(i) = ave.rowwise().mean();
-			_normalize(B, i);
-			const auto diff = std::abs(prevBi.dot(B.col(i)));
-			if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
-#ifndef NPROGLESS
-			if (j==FASTICA_LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
-#endif
-		}
-
-#ifndef NPROGLESS
-		now = std::chrono::system_clock::now();
-		std::cout
-		<< "[PROGLESS] end loop " << i
-		<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
-		prev = now;
-#endif
-		}
-		matrix Y = B.transpose() * X_whiten;
-
-#ifndef NPROGLESS
-		now = std::chrono::system_clock::now();
-		std::cout
-		<< "[PROGLESS] end fastica "
-		<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count()
-		<< "\ttotal:" << std::chrono::duration_cast<std::chrono::milliseconds>(now-start).count() << std::endl;
-		prev = now;
-#endif
-		return fastica_result{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
-	};
-
-	/**
-	 * implements of EASI
-	 * 
-	 * X: 観測信号
-	 * 
-	 * [reference]
-	 * https://ieeexplore.ieee.org/document/553476
-	 * https://www.ieice.org/ken/download/200703059ATF/
-	 */ 
-	class easi {
-	
-	public:
-		cica::matrix W;
-
-		easi(const int size): size(size){
-			random_engine random_engine(0);
-			W = random_uniform_matrix(size, random_engine);
-		}
-
-		vector update(const vector& x){
-			matrix y = W * x;
-			matrix V = y * y.transpose() - matrix::Identity(size, size) + g(y) * y.transpose() - y * g(y).transpose();
-			W = W - EASI_MU * V * W;
-			return y.col(0);
-		}
-
-	private:
-		const double EASI_MU = 0.001953125;
-		const int size;
-
-		matrix g(const matrix& y){
-			return -y.array().tanh().matrix();
-		}
-	};
-
-	struct easi_result {
-		matrix W;	// 復元行列
-		matrix Y;	// 復元信号
-	};
-
-	/**
-	 * EASI(バッチ処理)
-	 * シュミレーション時はfasticaと同じように扱える分、easiクラスよりも利用しやすい
-	 * 
-	 * final_recover: trueの場合、学習後の復元行列でXを再計算する。逆にfalseの場合、resultの復元信号は復元行列に対応しないので注意すること
-	 */ 
-	easi_result batch_easi(const matrix& X, const bool final_recover=true) {
-		easi easi(X.rows());
-		matrix Y(X.rows(), X.cols());
-		for (int i=0; i<X.cols(); i++){
-			vector x = X.col(i);
-			vector y = easi.update(x);
-			Y.col(i) = y;
-		}
-		if (final_recover){
-			Y = easi.W * X;
-		}
-		return easi_result{.W = easi.W, .Y = Y};
-	}
     
 	std::vector<double> to_std_vector(const vector& v1){
 		std::vector<double> v2(v1.data(), v1.data() + v1.size());
@@ -473,5 +288,221 @@ namespace cica {
 			}
 		}
 		return M;
+	}
+}
+
+namespace cica::fastica {
+
+	const int LOOP_MAX = 100;
+
+	/**
+	 * 正方行列でなくてはいけない
+	 * i番目を0~i-1番目までの縦ベクトルの直行空間に射影＋長さの正規化
+	 */
+	void _normalize(matrix& M, int i){
+		const auto size = M.cols();
+		if (i>0){
+			M.col(i) = M.col(i) - M.block(0, 0, size, i) * M.block(0, 0, size, i).transpose() * M.col(i);
+		}
+		M.col(i) = M.col(i) / std::sqrt(M.col(i).squaredNorm());
+	}
+
+	struct result {
+		matrix W;	// 復元行列
+		matrix Y;	// 復元信号
+		ivector loop; 	// 不動点法のループ回数
+	};
+
+	/**
+	 * 目的関数に使用する関数g
+	 */ 
+	struct objective_func {
+		const std::function<double(double)> g;
+		const std::function<double(double)> g2;
+
+		objective_func(): 
+			objective_func(
+				[](double bx) { return std::pow(bx, 3); },
+				[](double bx) { return 3*std::pow(bx, 2); }
+			)
+		{};
+
+		objective_func(
+			const std::function<double(double)> g,
+			const std::function<double(double)> g2
+		): g(g), g2(g2) {};
+	};
+
+	// 4次キュムラント
+	const auto kum4 = objective_func();
+
+	/**
+	 * implements of FastICA
+	 * 
+	 * X: 観測信号
+	 * 
+	 * Xについて、内部で中心化は行うが先にに中心化されていることが望ましい（元信号Sの中心化ができていれば、混合されたXも自然と中心化されるはず）
+	 * 		→ 中心化されているものを扱っていれば、2乗和誤差などの計算でズレが生じない
+	 * 
+	 * [reference]
+	 * https://ieeexplore.ieee.org/document/761722
+	 * http://manabukano.brilliant-future.net/document/text-ICA.pdf
+	 */
+	result fastica(const matrix& X, const objective_func& func=kum4) {
+
+#ifndef NPROGLESS
+	std::chrono::system_clock::time_point start, prev, now;
+	start = std::chrono::system_clock::now();
+	prev = start;
+	now = start;
+	std::cout 
+	<< "[PROGLESS] start fastica session"
+	<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
+	prev = now;
+#endif
+
+	cica::random_engine random_engine(0);
+	const auto signals = X.rows();
+	const auto samplings = X.cols();
+	
+	const matrix X_center = centerize(X);
+	const matrix X_cov = cov(X_center);	// 分散共分散行列を作成
+
+	Eigen::SelfAdjointEigenSolver<matrix> es(X_cov);
+	if (es.info() != Eigen::Success) abort();
+
+	const vector lambdas = es.eigenvalues().real();
+	const matrix P = es.eigenvectors().real();
+	const matrix Atilda = lambdas.cwiseSqrt().asDiagonal().inverse() * P.transpose();
+	const matrix X_whiten = Atilda * X_center;	// 無相関化
+
+#ifndef NPROGLESS
+	now = std::chrono::system_clock::now();
+	std::cout 
+	<< "[PROGLESS] start fixed point method"
+	<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
+	prev = now;
+#endif
+
+	assert(cov(X_whiten).isApprox(matrix::Identity(cov(X_whiten).rows(), cov(X_whiten).cols())));
+
+	const auto g = func.g;	// 不動点法に4次キュムラントを使用する
+	const auto g2 = func.g2;	// g()の微分
+
+	const auto I = X_whiten.rows();
+	Eigen::VectorXi loop(I);
+	auto B = random_uniform_matrix(I, random_engine);
+
+	for(int i=0; i<I; i++){
+		_normalize(B, i);
+	}
+
+	assert((B * B.transpose()).isApprox(matrix::Identity(B.rows(), B.cols())));
+
+	for(int i=0; i<I; i++){
+		for(int j=0; j<LOOP_MAX; j++){
+			loop(i) = j+1;	// ループ回数を記録
+			const vector prevBi = B.col(i);	// 値のコピー
+
+			const auto collen = X_whiten.cols();
+			matrix ave(I, collen);
+#ifndef NPARALLELIZE
+			#pragma omp parallel for
+#endif
+			for(int k=0; k<collen; k++){	// 不動点法による更新
+				const vector x = X_whiten.col(k);
+				ave.col(k) = g(x.dot(B.col(i)))*x - g2(x.dot(B.col(i)))*B.col(i);  
+			}
+			B.col(i) = ave.rowwise().mean();
+			_normalize(B, i);
+			const auto diff = std::abs(prevBi.dot(B.col(i)));
+			if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
+#ifndef NPROGLESS
+			if (j==LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
+#endif
+		}
+
+#ifndef NPROGLESS
+		now = std::chrono::system_clock::now();
+		std::cout
+		<< "[PROGLESS] end loop " << i
+		<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
+		prev = now;
+#endif
+		}
+		matrix Y = B.transpose() * X_whiten;
+
+#ifndef NPROGLESS
+		now = std::chrono::system_clock::now();
+		std::cout
+		<< "[PROGLESS] end fastica "
+		<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count()
+		<< "\ttotal:" << std::chrono::duration_cast<std::chrono::milliseconds>(now-start).count() << std::endl;
+		prev = now;
+#endif
+		return result{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
+	};
+}
+
+namespace cica::easi {
+
+	/**
+	 * implements of EASI
+	 * 
+	 * X: 観測信号
+	 * 
+	 * [reference]
+	 * https://ieeexplore.ieee.org/document/553476
+	 * https://www.ieice.org/ken/download/200703059ATF/
+	 */ 
+	class easi {
+	
+	public:
+		cica::matrix W;
+
+		easi(const int size): size(size){
+			random_engine random_engine(0);
+			W = random_uniform_matrix(size, random_engine);
+		}
+
+		vector update(const vector& x){
+			matrix y = W * x;
+			matrix V = y * y.transpose() - matrix::Identity(size, size) + g(y) * y.transpose() - y * g(y).transpose();
+			W = W - EASI_MU * V * W;
+			return y.col(0);
+		}
+
+	private:
+		const double EASI_MU = 0.001953125;
+		const int size;
+
+		matrix g(const matrix& y){
+			return -y.array().tanh().matrix();
+		}
+	};
+
+	struct result {
+		matrix W;	// 復元行列
+		matrix Y;	// 復元信号
+	};
+
+	/**
+	 * EASI(バッチ処理)
+	 * シュミレーション時はfasticaと同じように扱える分、easiクラスよりも利用しやすい
+	 * 
+	 * final_recover: trueの場合、学習後の復元行列でXを再計算する。逆にfalseの場合、resultの復元信号は復元行列に対応しないので注意すること
+	 */ 
+	result batch_easi(const matrix& X, const bool final_recover=true) {
+		easi easi(X.rows());
+		matrix Y(X.rows(), X.cols());
+		for (int i=0; i<X.cols(); i++){
+			vector x = X.col(i);
+			vector y = easi.update(x);
+			Y.col(i) = y;
+		}
+		if (final_recover){
+			Y = easi.W * X;
+		}
+		return result{.W = easi.W, .Y = Y};
 	}
 }

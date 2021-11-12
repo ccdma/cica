@@ -17,7 +17,7 @@ int main(){
 	const cica::matrix S = cica::centerize(noncenterS);
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * S;
-	auto result = cica::fastica(X);
+	auto result = cica::fastica::fastica(X);
 	const cica::imatrix P = cica::estimate_circulant_matrix(A, result.W);
 	const cica::matrix S2 = P.cast<double>().transpose() * result.Y;
 

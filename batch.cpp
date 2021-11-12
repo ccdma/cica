@@ -26,7 +26,7 @@ test_report test(const int signals, const int samplings, const int seed, const i
 
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * S;
-	const auto result = cica::fastica(X);
+	const auto result = cica::fastica::fastica(X);
 	const cica::imatrix P = cica::estimate_circulant_matrix(A, result.W);
 	const cica::matrix S2 = P.cast<double>().transpose() * result.Y;
 
