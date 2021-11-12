@@ -328,8 +328,8 @@ namespace cica::fastica {
 		{};
 
 		objective_func(
-			const std::function<double(double)> g,
-			const std::function<double(double)> g2
+			const std::function<double(double)> g,	// 不動点法におけるg()
+			const std::function<double(double)> g2	// g()の微分
 		): g(g), g2(g2) {};
 	};
 
@@ -386,8 +386,8 @@ namespace cica::fastica {
 
 	assert(cov(X_whiten).isApprox(matrix::Identity(cov(X_whiten).rows(), cov(X_whiten).cols())));
 
-	const auto g = func.g;	// 不動点法に4次キュムラントを使用する
-	const auto g2 = func.g2;	// g()の微分
+	const auto g = func.g;
+	const auto g2 = func.g2;
 
 	const auto I = X_whiten.rows();
 	Eigen::VectorXi loop(I);
