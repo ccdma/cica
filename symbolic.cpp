@@ -76,11 +76,13 @@ int main(){
 		<< "ber" << "\t"
 		<< "cte" << "\t"
 		<< "ncte" << "\t"
+		<< "complete" << "\t"
 		<< "time(ms)"
 	<< std::endl;	// header
 	for(int signals=50; signals<500; signals+=50){
 	for(double i=0.0; i<8; i+=1.0){
 		const int samplings = 1000 * (int)std::pow(2, i);
+		int complete = 0;
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
 		double ncte_sum = 0.0;
@@ -88,16 +90,19 @@ int main(){
 		double correlaion_mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
 		double time = 0.0;
-		#pragma omp parallel for reduction(+:ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,time)
+		#pragma omp parallel for reduction(+:complete,ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,time)
 		for (int seed=0; seed<trials; seed++){
-			const auto report = test(signals, samplings, seed, stddev, chebyt_n);
-			ber_sum += report.ber;
-			cte_sum += report.cte;
-			ncte_sum += report.ncte;
-			mse_sum += report.mse;
-			loop_ave_sum += report.loop_ave;
-			correlaion_mse_sum += report.correlaion_mse;
-			time += report.time;
+			try {
+				const auto report = test(signals, samplings, seed, stddev, chebyt_n);
+				ber_sum += report.ber;
+				cte_sum += report.cte;
+				ncte_sum += report.ncte;
+				mse_sum += report.mse;
+				loop_ave_sum += report.loop_ave;
+				correlaion_mse_sum += report.correlaion_mse;
+				time += report.time;
+				complete += 1;
+			} catch (cica::exception::base e) {}
 		}
 		std::cout
 			<< signals << "\t"
@@ -109,6 +114,7 @@ int main(){
 			<< ber_sum/trials << "\t" 
 			<< cte_sum/trials << "\t" 
 			<< ncte_sum/trials << "\t" 
+			<< complete << "\t" 
 			<< time/trials
 		<< std::endl;
 	}}

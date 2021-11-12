@@ -34,6 +34,17 @@ namespace cica {
 	using random_engine = std::mt19937; 
 }
 
+namespace cica::exception {
+
+	class base {
+	
+	public:
+		const std::string msg;
+	
+		base(const std::string msg) : msg(msg) {}
+	};
+}
+
 namespace cica::util {
 
 	const int WRITE_LIMIT = 10000;
@@ -385,7 +396,7 @@ namespace cica::fastica {
 		const matrix X_cov = cov(X_center);	// 分散共分散行列を作成
 
 		Eigen::SelfAdjointEigenSolver<matrix> es(X_cov);
-		if (es.info() != Eigen::Success) abort();
+		if (es.info() != Eigen::Success) throw exception::base("eigenvalue decomposition failed");
 
 		const vector lambdas = es.eigenvalues().real();
 		const matrix P = es.eigenvectors().real();
