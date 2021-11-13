@@ -34,7 +34,7 @@ namespace cica {
 	using random_engine = std::mt19937; 
 }
 
-namespace cica::exception {
+namespace cica { namespace exception {
 
 	class base {
 	
@@ -43,9 +43,9 @@ namespace cica::exception {
 	
 		base(const std::string msg) : msg(msg) {}
 	};
-}
+}}
 
-namespace cica::util {
+namespace cica { namespace util {
 
 	const int WRITE_LIMIT = 10000;
 
@@ -67,7 +67,7 @@ namespace cica::util {
 		outputfile << ss.rdbuf();
 		outputfile.close();
 	}
-}
+}}
 
 namespace cica {
 
@@ -308,7 +308,7 @@ namespace cica {
 	}
 }
 
-namespace cica::fastica {
+namespace cica { namespace fastica {
 
 	const int LOOP_MAX = 100;
 
@@ -469,9 +469,9 @@ namespace cica::fastica {
 #endif
 		return result{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
 	};
-}
+}}
 
-namespace cica::easi {
+namespace cica { namespace easi {
 
 	/**
 	 * implements of EASI
@@ -532,4 +532,4 @@ namespace cica::easi {
 		}
 		return result{.W = easi.W, .Y = Y};
 	}
-}
+}}
