@@ -30,8 +30,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		const int additional_n = i%10;
-		noncenterS.row(i) = cica::chebyt_sampling(chebyt_n+additional_n, samplings, distribution(random_engine));	// 変更する場合はヘッダも変更する
+		noncenterS.row(i) = cica::chebyt_sampling(chebyt_n, samplings, distribution(random_engine));	// 変更する場合はヘッダも変更する
 	}
 	const cica::matrix S = cica::centerize(noncenterS);
 
@@ -60,11 +59,11 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto samplings = 10000;
-	const auto signals = 200;
+	// const auto samplings = 10000;
+	const auto signals = 400;
 	const auto stddev = 0.0;
 	const auto chebyt_n = 2;
-	const auto trials = 10;
+	const auto trials = 2;
 	std::cout << "commit" << "\t" << COMMIT_ID << std::endl;
 	std::cout << "chebyt_n(fixed)" << "\t" << chebyt_n << std::endl;
 	std::cout << "trials" << "\t" << trials << std::endl;
@@ -82,8 +81,8 @@ int main(){
 		<< "complete" << "\t"
 		<< "time(ms)"
 	<< std::endl;	// header
-	for(int signals=50; signals<500; signals+=50){
-	for(double i=0.0; i<8; i+=1.0){
+	// for(int signals=50; signals<500; signals+=50){
+	for(double i=8; i<11; i+=1){
 		const int samplings = 1000 * (int)std::pow(2, i);
 		int complete = 0;
 		double ber_sum = 0.0;
@@ -123,6 +122,6 @@ int main(){
 			<< complete << "\t" 
 			<< time/trials
 		<< std::endl;
-	}}
+	}
 	return 0;
 }
