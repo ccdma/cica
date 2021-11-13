@@ -4,11 +4,10 @@ SRCS := batch.cpp
 SRCS += single.cpp
 SRCS += symbolic.cpp
 
-COMMIT_ID := $(shell git rev-parse --short HEAD)
-UNSTAGED := $(shell if [ `git status -s -uno | wc -l` -ne 0 ]; then echo "_unstaged"; fi )
+COMMIT := $(shell git rev-parse --short HEAD | tr -d '\n'; if [ `git status -s -uno | wc -l` -ne 0 ]; then echo "_unstaged"; fi)
 
 $(SRCS:.cpp=):
-	$(CC) $(CFLAGS) $@.cpp -o $@.out -DCOMMIT_ID=\"$(COMMIT_ID)$(UNSTAGED)\"
+	$(CC) $(CFLAGS) $@.cpp -o $@.out -DCOMMIT_ID=\"$(COMMIT)\"
 
 clean:
 	rm -f *.out *.csv
