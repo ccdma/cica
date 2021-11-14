@@ -12,7 +12,7 @@ $(SRCS:.cpp=):
 clean:
 	rm -f *.out *.csv
 
-RSYNC := rsync -avc --exclude '*.out' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
+RSYNC := rsync -avc --exclude '*.out' --exclude '*.csv' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
 
 send:
 	$(RSYNC)

@@ -5,8 +5,8 @@
 
 int main(){
 	cica::random_engine random_engine(1);
-	const auto signals = 400;
-	const auto samplings = 500000;
+	const auto signals = 50;
+	const auto samplings = 10000;
 	
 	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
