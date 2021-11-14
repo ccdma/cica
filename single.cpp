@@ -5,15 +5,17 @@
 
 int main(){
 	cica::random_engine random_engine(1);
-	std::uniform_real_distribution<double> distribution(-0.99, 0.99);
-	const auto signals = 4;
-	const auto samplings = 1000;
+	const auto signals = 400;
+	const auto samplings = 500000;
 	
 	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
+		cica::random_engine random_engine(i);
+		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
 		noncenterS.row(i) = cica::chebyt_sampling(2, samplings, distribution(random_engine));
 	}
+
 	const cica::matrix S = cica::centerize(noncenterS);
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * S;
