@@ -25,6 +25,7 @@
 namespace cica {
 
 	using matrix = Eigen::MatrixXd;
+	using matrix_r = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 	using vector = Eigen::VectorXd;
 	using cmatrix = Eigen::MatrixXcd;
 	using cvector = Eigen::VectorXcd;
@@ -345,7 +346,7 @@ namespace cica { namespace fastica {
 	void _normalize(matrix& M, const int i){
 		const auto size = M.cols();
 		if (i>0){
-			M.col(i) = M.col(i) - M.block(0, 0, size, i) * M.block(0, 0, size, i).transpose() * M.col(i);
+			M.col(i) = M.col(i) - M.leftCols(i) * M.leftCols(i).transpose() * M.col(i);
 		}
 		M.col(i) = M.col(i) / std::sqrt(M.col(i).squaredNorm());
 	}
@@ -455,13 +456,15 @@ namespace cica { namespace fastica {
 				const vector prevBi = B.col(i);	// 値のコピー
 
 				const auto collen = X_whiten.cols();
-				matrix ave(I, collen);
+				matrix_r ave(I, collen);
 #ifndef NPARALLELIZE
 				#pragma omp parallel for
 #endif
 				for(int k=0; k<collen; k++){	// 不動点法による更新
 					const vector x = X_whiten.col(k);
-					ave.col(k) = g(x.dot(B.col(i)))*x - g2(x.dot(B.col(i)))*B.col(i);  
+					const vector bi = B.col(i);
+					const double x_dot_bi = x.dot(bi);
+					ave.col(k) = g(x_dot_bi)*x - g2(x_dot_bi)*bi;  
 				}
 				B.col(i) = ave.rowwise().mean();
 				_normalize(B, i);
