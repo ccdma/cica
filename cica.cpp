@@ -406,7 +406,6 @@ namespace cica { namespace fastica {
 
 #ifndef NPROGLESS
 		util::timer timer;
-		timer.from_last();
 		std::cout 
 		<< "[PROGLESS] start fastica session"
 		<< "\t" << timer.from_last() << std::endl;
