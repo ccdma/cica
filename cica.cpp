@@ -67,6 +67,32 @@ namespace cica { namespace util {
 		outputfile << ss.rdbuf();
 		outputfile.close();
 	}
+
+	class timer {
+
+	public:
+		timer(): start(std::chrono::system_clock::now()){
+			this->last = start;
+		}
+
+		int from_last(){
+			const auto now = std::chrono::system_clock::now();
+			return std::chrono::duration_cast<std::chrono::milliseconds>(now-last).count();
+		}
+
+		int from_start(){
+			const auto now = std::chrono::system_clock::now();
+			return std::chrono::duration_cast<std::chrono::milliseconds>(now-start).count();
+		}
+
+		void update(){
+			this->last = std::chrono::system_clock::now();
+		}
+
+	private:
+		const std::chrono::system_clock::time_point start;
+		std::chrono::system_clock::time_point last;
+	};		
 }}
 
 namespace cica {
@@ -378,14 +404,12 @@ namespace cica { namespace fastica {
 	result fastica(const matrix& X, const objective_func& func=kum4) {
 
 #ifndef NPROGLESS
-		std::chrono::system_clock::time_point start, prev, now;
-		start = std::chrono::system_clock::now();
-		prev = start;
-		now = start;
+		util::timer timer;
+		timer.from_last();
 		std::cout 
 		<< "[PROGLESS] start fastica session"
-		<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
-		prev = now;
+		<< "\t" << timer.from_last() << std::endl;
+		timer.update();
 #endif
 
 		cica::random_engine random_engine(0);
@@ -404,11 +428,10 @@ namespace cica { namespace fastica {
 		const matrix X_whiten = Atilda * X_center;	// 無相関化
 
 #ifndef NPROGLESS
-		now = std::chrono::system_clock::now();
 		std::cout 
 		<< "[PROGLESS] start fixed point method"
-		<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
-		prev = now;
+		<< "\t" << timer.from_last() << std::endl;
+		timer.update();
 #endif
 
 		assert(cov(X_whiten).isApprox(matrix::Identity(cov(X_whiten).rows(), cov(X_whiten).cols())));
@@ -450,22 +473,19 @@ namespace cica { namespace fastica {
 			}
 
 #ifndef NPROGLESS
-			now = std::chrono::system_clock::now();
 			std::cout
 			<< "[PROGLESS] end loop " << i
-			<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count() << std::endl;
-			prev = now;
+			<< "\t" << timer.from_last() << std::endl;
+			timer.update();
 #endif
 		}
 		matrix Y = B.transpose() * X_whiten;
 
 #ifndef NPROGLESS
-		now = std::chrono::system_clock::now();
 		std::cout
 		<< "[PROGLESS] end fastica "
-		<< "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(now-prev).count()
-		<< "\ttotal:" << std::chrono::duration_cast<std::chrono::milliseconds>(now-start).count() << std::endl;
-		prev = now;
+		<< "\t" << timer.from_last()
+		<< "\ttotal:" << timer.from_start() << std::endl;
 #endif
 		return result{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
 	};
