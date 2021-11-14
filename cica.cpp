@@ -453,7 +453,7 @@ namespace cica { namespace fastica {
 		for(int i=0; i<I; i++){
 			for(int j=0; j<LOOP_MAX; j++){
 				loop(i) = j+1;	// ループ回数を記録
-				const vector prevBi = B.col(i);	// 値のコピー
+				const vector cache_bi = B.col(i);	// 値のコピー
 
 				const auto collen = X_whiten.cols();
 				matrix_r ave(I, collen);
@@ -462,13 +462,12 @@ namespace cica { namespace fastica {
 #endif
 				for(int k=0; k<collen; k++){	// 不動点法による更新
 					const vector x = X_whiten.col(k);
-					const vector bi = B.col(i);
-					const double x_dot_bi = x.dot(bi);
-					ave.col(k) = g(x_dot_bi)*x - g2(x_dot_bi)*bi;  
+					const double x_dot_bi = x.dot(cache_bi);
+					ave.col(k) = g(x_dot_bi)*x - g2(x_dot_bi)*cache_bi;
 				}
 				B.col(i) = ave.rowwise().mean();
 				_normalize(B, i);
-				const auto diff = std::abs(prevBi.dot(B.col(i)));
+				const auto diff = std::abs(cache_bi.dot(B.col(i)));
 				if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
 #ifndef NPROGLESS
 				if (j==LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
