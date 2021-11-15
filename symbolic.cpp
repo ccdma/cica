@@ -83,7 +83,7 @@ int main(){
 		<< "time(ms)"
 	<< std::endl;	// header
 	// for(int signals=50; signals<500; signals+=50){
-	for(double i=8; i<11; i+=1){
+	for(double i=9; i<12; i+=1){
 		const int samplings = 1000 * (int)std::pow(2, i);
 		int complete = 0;
 		double ber_sum = 0.0;
