@@ -1,5 +1,5 @@
 // #define NDEBUG
-#define NPROGLESS
+// #define NPROGLESS
 
 #ifndef COMMIT_ID
 	#define COMMIT_ID "undefined"
