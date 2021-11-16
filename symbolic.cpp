@@ -1,5 +1,5 @@
 // #define NPARALLELIZE
-#define NDEBUG
+// #define NDEBUG
 // #define NPROGLESS
 
 #ifndef COMMIT_ID
@@ -7,6 +7,7 @@
 #endif
 
 #include <cmath>
+#include <cassert>
 #include "cica.cpp"
 
 struct test_report {
@@ -32,12 +33,13 @@ test_report test(const int signals, const int samplings, const int seed, const d
 		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
 		noncenterS.row(i) = cica::chebyt_sampling(chebyt_n, samplings, distribution(random_engine));	// 変更する場合はヘッダも変更する
 	}
-	
 	const cica::matrix S = cica::centerize(noncenterS);
 
+#ifndef NDEBUG
 	const cica::matrix CS = cica::correlation_matrix(S);
 	const double correlaion_msea = cica::mean_squared_error(CS, cica::matrix::Identity(CS.rows(), CS.cols()));
-	std::cout << correlaion_msea << std::endl;
+	assert(correlaion_msea < 1.0e-2);
+#endif
 
 	const cica::matrix T = (S.array() * B.cast<double>().array()).matrix();
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);

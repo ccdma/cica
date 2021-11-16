@@ -20,6 +20,7 @@
 #include <sstream>
 #include <complex>
 #include <cassert>
+#include "spdlog/spdlog.h"
 #include <Eigen/Dense>
 
 namespace cica {
@@ -431,13 +432,13 @@ namespace cica { namespace fastica {
 		const matrix X_whiten = Atilda * X_center;	// 無相関化
 
 #ifndef NPROGLESS
-		std::cout 
+		std::cout
 		<< "[PROGLESS] start fixed point method"
 		<< "\t" << timer.from_last() << std::endl;
 		timer.update();
 #endif
 
-		assert(cov(X_whiten).isApprox(matrix::Identity(cov(X_whiten).rows(), cov(X_whiten).cols())));
+		assert(cov(X_whiten).isApprox(matrix::Identity(cov(X_whiten).rows(), cov(X_whiten).cols()), 1.0e-5));
 
 		const auto g = func.g;
 		const auto g2 = func.g2;
