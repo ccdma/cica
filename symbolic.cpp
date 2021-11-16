@@ -1,6 +1,6 @@
 // #define NPARALLELIZE
 // #define NDEBUG
-// #define NPROGLESS
+#define NPROGLESS
 
 #ifndef COMMIT_ID
 	#define COMMIT_ID "undefined"
@@ -89,7 +89,7 @@ int main(){
 		<< "time(ms)"
 	<< std::endl;	// header
 	for(int signals=50; signals<500; signals+=50){
-	for(double i=1; i<12; i+=1){
+	for(double i=4; i<12; i+=1){
 		const int samplings = 1000 * (int)std::pow(2, i);
 		int complete = 0;
 		double ber_sum = 0.0;
@@ -100,7 +100,7 @@ int main(){
 		double res_correlaion_mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
 		double time = 0.0;
-		#pragma omp parallel for reduction(+:complete,ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,res_correlaion_mse_sum,time)
+		// #pragma omp parallel for reduction(+:complete,ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,res_correlaion_mse_sum,time)
 		for (int seed=0; seed<trials; seed++){
 			try {
 				const auto report = test(signals, samplings, seed, stddev, chebyt_n);
