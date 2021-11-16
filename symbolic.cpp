@@ -88,9 +88,10 @@ int main(){
 		<< "complete" << "\t"
 		<< "time(ms)"
 	<< std::endl;	// header
-	for(int signals=50; signals<500; signals+=50){
-	for(double i=4; i<12; i+=1){
-		const int samplings = 1000 * (int)std::pow(2, i);
+	for(int i1=1; i1<=10; i1++){
+	for(double i2=1; i2<=4; i2++){
+		const int signals = i1*50;
+		const int samplings = 1000 * (int)std::pow(2, i2+i1);
 		int complete = 0;
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
