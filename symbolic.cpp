@@ -67,7 +67,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 
 int main(){
 	// const auto samplings = 10000;
-	const auto signals = 400;
+	const auto signals = 100;
 	const auto stddev = 0.0;
 	const auto chebyt_n = 2;
 	const auto trials = 10;
@@ -88,10 +88,10 @@ int main(){
 		<< "complete" << "\t"
 		<< "time(ms)"
 	<< std::endl;	// header
-	for(int i1=1; i1<=10; i1++){
-	for(double i2=1; i2<=4; i2++){
-		const int signals = i1*50;
-		const int samplings = 1000 * (int)std::pow(2, i2+i1);
+	// for(int i=1; i<=10; i++){
+	for(double j=1; j<=20; j++){
+		// const int signals = i*50;
+		const int samplings = 5000 * j;
 		int complete = 0;
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
@@ -133,6 +133,6 @@ int main(){
 			<< complete << "\t" 
 			<< time/trials
 		<< std::endl;
-	}}
+	}
 	return 0;
 }
