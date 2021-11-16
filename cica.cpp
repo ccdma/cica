@@ -316,6 +316,9 @@ namespace cica {
 		const int size = X.rows();
 		const int n = X.cols();
 		matrix M(size, size);
+#ifndef NPARALLELIZE
+		#pragma omp parallel for
+#endif
 		for (int i=0; i<size; i++){
 			for(int j=0; j<i+1; j++){
 				const vector rowi = X.row(i);

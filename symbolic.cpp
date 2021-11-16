@@ -1,6 +1,6 @@
 // #define NPARALLELIZE
 #define NDEBUG
-#define NPROGLESS
+// #define NPROGLESS
 
 #ifndef COMMIT_ID
 	#define COMMIT_ID "undefined"
@@ -28,12 +28,16 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
 	for (int i=0; i<signals; i++){
-		cica::random_engine random_engine(i*seed);
+		cica::random_engine random_engine(i*(seed+1));
 		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
 		noncenterS.row(i) = cica::chebyt_sampling(chebyt_n, samplings, distribution(random_engine));	// 変更する場合はヘッダも変更する
 	}
 	
 	const cica::matrix S = cica::centerize(noncenterS);
+
+	const cica::matrix CS = cica::correlation_matrix(S);
+	const double correlaion_msea = cica::mean_squared_error(CS, cica::matrix::Identity(CS.rows(), CS.cols()));
+	std::cout << correlaion_msea << std::endl;
 
 	const cica::matrix T = (S.array() * B.cast<double>().array()).matrix();
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
@@ -82,8 +86,8 @@ int main(){
 		<< "complete" << "\t"
 		<< "time(ms)"
 	<< std::endl;	// header
-	// for(int signals=50; signals<500; signals+=50){
-	for(double i=9; i<12; i+=1){
+	for(int signals=50; signals<500; signals+=50){
+	for(double i=1; i<12; i+=1){
 		const int samplings = 1000 * (int)std::pow(2, i);
 		int complete = 0;
 		double ber_sum = 0.0;
@@ -123,6 +127,6 @@ int main(){
 			<< complete << "\t" 
 			<< time/trials
 		<< std::endl;
-	}
+	}}
 	return 0;
 }
