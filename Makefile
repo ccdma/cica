@@ -20,4 +20,10 @@ send:
 send-force:
 	$(RSYNC) --delete
 
+push:
+	git add -A .
+	git commit -m "modified: $(shell git diff master --name-only)"
+	make send
+	git push
+
 .PHONY: clean send send-force
