@@ -11,10 +11,6 @@
 	#define EIGEN_NO_DEBUG
 #endif
 
-#ifndef DLOG
-	#define DLOG(...) std::printf(__VA_ARGS__)
-#endif
-
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -25,6 +21,10 @@
 #include <complex>
 #include <cassert>
 #include <Eigen/Dense>
+
+#ifndef DLOG
+	#define DLOG(...) std::printf(__VA_ARGS__)
+#endif
 
 namespace cica {
 
