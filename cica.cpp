@@ -20,7 +20,6 @@
 #include <sstream>
 #include <complex>
 #include <cassert>
-#include "spdlog/spdlog.h"
 #include <Eigen/Dense>
 
 namespace cica {
