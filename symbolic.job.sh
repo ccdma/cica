@@ -11,5 +11,6 @@ set -x
 # automatically
 # export OMP_NUM_THREADS=$QSUB_THREADS
 export OMP_NESTED=TRUE
+export OMP_MAX_ACTIVE_LEVELS=2
 
 ./symbolic.out
