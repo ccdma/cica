@@ -10,6 +10,5 @@ set -x
 
 # automatically
 # export OMP_NUM_THREADS=$QSUB_THREADS
-export OMP_NESTED=TRUE
 
 ./symbolic.out

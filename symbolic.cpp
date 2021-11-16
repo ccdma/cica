@@ -1,4 +1,4 @@
-// #define NPARALLELIZE
+#define NPARALLELIZE
 // #define NDEBUG
 #define NPROGLESS
 
@@ -70,7 +70,7 @@ int main(){
 	const auto signals = 100;
 	const auto stddev = 0.0;
 	const auto chebyt_n = 2;
-	const auto trials = 10;
+	const auto trials = 72;
 	std::cout << "commit" << "\t" << COMMIT_ID << std::endl;
 	std::cout << "chebyt_n(fixed)" << "\t" << chebyt_n << std::endl;
 	std::cout << "trials" << "\t" << trials << std::endl;
