@@ -101,7 +101,7 @@ int main(){
 		double res_correlaion_mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
 		double time = 0.0;
-		// #pragma omp parallel for reduction(+:complete,ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,res_correlaion_mse_sum,time)
+		#pragma omp parallel for reduction(+:complete,ber_sum,cte_sum,ncte_sum,mse_sum,loop_ave_sum,correlaion_mse_sum,res_correlaion_mse_sum,time)
 		for (int seed=0; seed<trials; seed++){
 			try {
 				const auto report = test(signals, samplings, seed, stddev, chebyt_n);
