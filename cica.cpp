@@ -11,6 +11,10 @@
 	#define EIGEN_NO_DEBUG
 #endif
 
+#ifndef DLOG
+	#define DLOG(...) std::printf(__VA_ARGS__)
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -409,9 +413,7 @@ namespace cica { namespace fastica {
 
 #ifndef NPROGLESS
 		util::timer timer;
-		std::cout 
-		<< "[PROGLESS] start fastica session"
-		<< "\t" << timer.from_last() << std::endl;
+		DLOG("[PROGLESS] start fastica session\t%i\n", timer.from_last());
 		timer.update();
 #endif
 
@@ -431,9 +433,7 @@ namespace cica { namespace fastica {
 		const matrix X_whiten = Atilda * X_center;	// 無相関化
 
 #ifndef NPROGLESS
-		std::cout
-		<< "[PROGLESS] start fixed point method"
-		<< "\t" << timer.from_last() << std::endl;
+		DLOG("[PROGLESS] start fixed point method\t%i\n", timer.from_last());
 		timer.update();
 #endif
 
@@ -472,24 +472,19 @@ namespace cica { namespace fastica {
 				const auto diff = std::abs(cache_bi.dot(B.col(i)));
 				if (1.0 - 1.e-8 < diff && diff < 1.0 + 1.e-8) break;
 #ifndef NPROGLESS
-				if (j==LOOP_MAX-1) printf("[WARN] loop limit exceeded\n");
+				if (j==LOOP_MAX-1) DLOG("[WARN] loop limit exceeded\n");
 #endif
 			}
 
 #ifndef NPROGLESS
-			std::cout
-			<< "[PROGLESS] end loop " << i
-			<< "\t" << timer.from_last() << std::endl;
+			DLOG("[PROGLESS] end loop\t%i\t%i\n", i, timer.from_last());
 			timer.update();
 #endif
 		}
 		matrix Y = B.transpose() * X_whiten;
 
 #ifndef NPROGLESS
-		std::cout
-		<< "[PROGLESS] end fastica "
-		<< "\t" << timer.from_last()
-		<< "\ttotal:" << timer.from_start() << std::endl;
+		DLOG("[PROGLESS] end loop\t%i\ttotal%i\n", timer.from_last(), timer.from_start());
 #endif
 		return result{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
 	};
