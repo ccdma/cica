@@ -1,6 +1,6 @@
 // #define NDEBUG
 #define NPROGLESS
-// #define NPARALLELIZE
+#define NPARALLELIZE
 
 #ifndef COMMIT_ID
 	#define COMMIT_ID "undefined"
@@ -70,7 +70,7 @@ int main(){
 	const auto signals = 100;
 	const auto stddev = 0.0;
 	const auto chebyt_n = 2;
-	const auto trials = 20;
+	const auto trials = 36;
 	std::cout << "commit" << "\t" << COMMIT_ID << std::endl;
 	std::cout << "chebyt_n(fixed)" << "\t" << chebyt_n << std::endl;
 	std::cout << "trials" << "\t" << trials << std::endl;
@@ -101,7 +101,7 @@ int main(){
 		double res_correlaion_mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
 		double time = 0.0;
-		// #pragma omp parallel for
+		#pragma omp parallel for
 		for (int seed=0; seed<trials; seed++){
 			try {
 				const auto report = test(signals, samplings, seed, stddev, chebyt_n);
