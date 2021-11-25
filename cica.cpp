@@ -200,15 +200,15 @@ namespace cica {
 
 	/**
 	 * w: 角周波数、len: 長さ
+	 * sin[w*t] t=0,1,2...
 	 */
 	vector sine_sampling(const double w, const int len){
 		vector S(len);
-		const double gap = 0.1;
 #ifndef NPARALLELIZE
 		#pragma omp parallel for
 #endif
-		for (int i=0; i<len; i++){
-			S(i) = std::sin(w*(double)i*gap);
+		for (int t=0; t<len; t++){
+			S(t) = std::sin(w*(double)t);
 		}
 		return S;
 	}
