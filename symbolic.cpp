@@ -65,13 +65,8 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	// const auto samplings = 10000;
-	const auto signals = 100;
-	const auto stddev = 0.0;
-	const auto chebyt_n = 2;
-	const auto trials = 36;
+	const auto trials = 1;
 	std::cout << "commit" << "\t" << COMMIT_ID << std::endl;
-	std::cout << "chebyt_n(fixed)" << "\t" << chebyt_n << std::endl;
 	std::cout << "trials" << "\t" << trials << std::endl;
 	std::cout
 		<< "signals" << "\t"
@@ -87,10 +82,14 @@ int main(){
 		<< "complete" << "\t"
 		<< "time(ms)"
 	<< std::endl;	// header
+	const auto samplings = 10000;
+	const auto signals = 100;
+	const auto stddev = 0.0;
+	const auto chebyt_n = 2;
 	// for(int i=1; i<=10; i++){
-	for(double j=1; j<=20; j++){
+	// for(double j=1; j<=20; j++){
 		// const int signals = i*50;
-		const int samplings = 5000 * j;
+		// const int samplings = 5000 * j;
 		int complete = 0;
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
@@ -132,6 +131,6 @@ int main(){
 			<< complete << "\t" 
 			<< time/trials
 		<< std::endl;
-	}
+	// } // end root for
 	return 0;
 }
