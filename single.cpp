@@ -4,8 +4,8 @@
 #include "cica.cpp"
 
 int main(){
-	const auto signals = 4;
-	const auto samplings = 1000;
+	const auto signals = 10;
+	const auto samplings = 10000;
 	
 	cica::matrix noncenterS(signals, samplings);
 	#pragma omp parallel for
