@@ -484,7 +484,7 @@ namespace cica { namespace fastica {
 		matrix Y = B.transpose() * X_whiten;
 
 #ifndef NPROGLESS
-		DLOG("[PROGLESS] end loop\t%i\ttotal%i\n", timer.from_last(), timer.from_start());
+		DLOG("[PROGLESS] end fastica session\t%i\ttotal\t%i\n", timer.from_last(), timer.from_start());
 #endif
 		return result{.W = B.transpose()*Atilda, .Y = Y, .loop = loop};
 	};
