@@ -1,6 +1,5 @@
 // #define NDEBUG
 #define NPROGLESS
-#define NPARALLELIZE
 
 #ifndef COMMIT_ID
 	#define COMMIT_ID "undefined"
