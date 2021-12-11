@@ -66,29 +66,30 @@ test_report test(const int signals, const int samplings, const int seed, const d
 
 int main(){
 	const auto trials = 1;
-	std::cout << "commit" << "\t" << COMMIT_ID << std::endl;
-	std::cout << "trials" << "\t" << trials << std::endl;
+	const auto sep = ",";
+	std::cout << "commit" << sep << COMMIT_ID << std::endl;
+	std::cout << "trials" << sep << trials << std::endl;
 	std::cout
-		<< "signals" << "\t"
-		<< "samplings" << "\t"
-		<< "stddev" << "\t"
-		<< "mse" << "\t"
-		<< "correlaion_mse" << "\t"
-		<< "res_correlaion_mse" << "\t"
-		<< "loop_ave" << "\t"
-		<< "ber" << "\t"
-		<< "cte" << "\t"
-		<< "ncte" << "\t"
-		<< "complete" << "\t"
+		<< "signals" << sep
+		<< "samplings" << sep
+		<< "stddev" << sep
+		<< "mse" << sep
+		<< "correlaion_mse" << sep
+		<< "res_correlaion_mse" << sep
+		<< "loop_ave" << sep
+		<< "ber" << sep
+		<< "cte" << sep
+		<< "ncte" << sep
+		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
 	const auto samplings = 10000;
-	const auto signals = 100;
+	// const auto signals = 100;
 	const auto stddev = 0.0;
 	const auto chebyt_n = 2;
-	// for(int i=1; i<=10; i++){
+	for(int i=1; i<=20; i++){
 	// for(double j=1; j<=20; j++){
-		// const int signals = i*50;
+		const int signals = 50+i*5;
 		// const int samplings = 5000 * j;
 		int complete = 0;
 		double ber_sum = 0.0;
@@ -99,7 +100,7 @@ int main(){
 		double res_correlaion_mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
 		double time = 0.0;
-		#pragma omp parallel for
+		// #pragma omp parallel for
 		for (int seed=0; seed<trials; seed++){
 			try {
 				const auto report = test(signals, samplings, seed, stddev, chebyt_n);
@@ -118,19 +119,19 @@ int main(){
 			} catch (cica::exception::base e) {}
 		}
 		std::cout
-			<< signals << "\t"
-			<< samplings << "\t"
-			<< stddev << "\t"
-			<< mse_sum/trials << "\t"
-			<< correlaion_mse_sum/trials << "\t"
-			<< res_correlaion_mse_sum/trials << "\t"
-			<< loop_ave_sum/trials << "\t"
-			<< ber_sum/trials << "\t" 
-			<< cte_sum/trials << "\t" 
-			<< ncte_sum/trials << "\t" 
-			<< complete << "\t" 
+			<< signals << sep
+			<< samplings << sep
+			<< stddev << sep
+			<< mse_sum/trials << sep
+			<< correlaion_mse_sum/trials << sep
+			<< res_correlaion_mse_sum/trials << sep
+			<< loop_ave_sum/trials << sep
+			<< ber_sum/trials << sep 
+			<< cte_sum/trials << sep 
+			<< ncte_sum/trials << sep 
+			<< complete << sep 
 			<< time/trials
 		<< std::endl;
-	// } // end root for
+	} // end root for
 	return 0;
 }
