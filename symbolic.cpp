@@ -83,13 +83,13 @@ int main(){
 		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
-	const auto samplings = 10000;
+	const auto samplings = 30000;
 	// const auto signals = 100;
 	const auto stddev = 0.0;
 	const auto chebyt_n = 2;
 	for(int i=1; i<=20; i++){
 	// for(double j=1; j<=20; j++){
-		const int signals = 50+i*5;
+		const int signals = 150+i*5;
 		// const int samplings = 5000 * j;
 		int complete = 0;
 		double ber_sum = 0.0;

@@ -9,6 +9,9 @@ COMMIT := $(shell git rev-parse --short HEAD | tr -d '\n'; if [ `git status -s -
 $(SRCS:.cpp=):
 	$(CC) $(CFLAGS) $@.cpp -o $@.out -DCOMMIT_ID=\"$(COMMIT)\"
 
+adi:
+	$(CC) $(CFLAGS) -liio $@.cpp -o $@.out -DCOMMIT_ID=\"$(COMMIT)\"
+
 clean:
 	rm -f *.out *.csv
 
