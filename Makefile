@@ -10,7 +10,7 @@ $(SRCS:.cpp=):
 	$(CC) $(CFLAGS) $@.cpp -o $@.out -DCOMMIT_ID=\"$(COMMIT)\"
 
 adi:
-	$(CC) $(CFLAGS) -liio $@.cpp -o $@.out -DCOMMIT_ID=\"$(COMMIT)\"
+	$(CC) $(CFLAGS) $@.cpp -liio -o $@.out -DCOMMIT_ID=\"$(COMMIT)\"
 
 clean:
 	rm -f *.out *.csv
