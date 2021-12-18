@@ -47,7 +47,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 1;
+	const auto trials = 50;
 	const auto sep = ",";
 	std::cout << "commit" << sep << COMMIT_ID << std::endl;
 	std::cout << "trials" << sep << trials << std::endl;
@@ -59,7 +59,7 @@ int main(){
 		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
-	const auto samplings = 1000;
+	const auto samplings = 10000;
 	const auto signals = 3;
 	const auto stddev = 0.01;
 	const auto chebyt_n = 2;
