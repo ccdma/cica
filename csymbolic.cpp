@@ -60,11 +60,12 @@ int main(){
 		<< "time(ms)"
 	<< std::endl;	// header
 	const auto samplings = 1000;
-	const auto signals = 2;
-	const auto stddev = 0.1;
+	const auto signals = 3;
+	const auto stddev = 0.01;
 	const auto chebyt_n = 2;
-	// for(int i=1; i<=20; i++){
-	// for(double j=1; j<=20; j++){
+	for(int i=1; i<=1; i++){
+	for(double j=1; j<=20; j++){
+		const auto signals = j+1;
 		int complete = 0;
 		double ber_sum = 0.0;
 		double time = 0.0;
@@ -88,6 +89,6 @@ int main(){
 			<< complete << sep 
 			<< time/trials
 		<< std::endl;
-	// } // end root for
+	}} // end root for
 	return 0;
 }
