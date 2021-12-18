@@ -4,18 +4,20 @@
 #include "cica.cpp"
 
 int main(){
-	const auto signals = 500;
-	const auto samplings = 1000000;
+	const auto signals = 4;
+	const auto samplings = 1000;
 	
 	cica::matrix noncenterS(signals, samplings);
-	#pragma omp parallel for
-	for (int i=0; i<signals; i++){
-		cica::random_engine random_engine(i);
-		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
-		noncenterS.row(i) = cica::chebyt_sampling(2, samplings, distribution(random_engine));
+	for (int i=0; i<signals-2; i++){
+		noncenterS.row(i) = cica::chebyt_sampling(2, samplings, (i+1.0)/10.0);
 	}
-
+	for (int i=2; i<signals; i++){
+		noncenterS.row(i) = cica::sine_sampling(std::sqrt(i-1)/10.0, samplings);
+	}
+	
 	cica::random_engine random_engine(1);
+	// noncenterS = noncenterS + cica::gauss_matrix(signals, samplings, 0.1, random_engine);
+
 	const cica::matrix S = cica::centerize(noncenterS);
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * S;
@@ -31,9 +33,9 @@ int main(){
 	const cica::matrix XR = X.rightCols(plot_num);
 	cica::util::write_matrix(ss, XR);
 	ss << std::endl;
-	const cica::matrix YR = result.Y.rightCols(plot_num);
-	cica::util::write_matrix(ss, YR);
+	const cica::matrix S2R = S2.rightCols(plot_num);
+	cica::util::write_matrix(ss, S2R);
 
-	cica::util::save_stream(ss, "result.csv");
+	cica::util::save_stream(ss, "data.csv");
 	return 0;
 }
