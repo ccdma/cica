@@ -142,6 +142,10 @@ namespace cica {
 		return M.colwise() - M.rowwise().mean();
 	}
 
+	cmatrix centerize(const cmatrix& M){
+		return M.colwise() - M.rowwise().mean();
+	}
+
 	/**
 	 * 分散共分散行列を計算する
 	 * E[(M−μ)(M−μ)^⊤]である
