@@ -121,6 +121,10 @@ namespace cica {
 		return matrix::Zero(rows, cols).unaryExpr(generator);
 	};
 
+	cmatrix cgauss_matrix(const int rows, const int cols, const double stddev, random_engine& engine){
+		return gauss_matrix(rows, cols, stddev, engine) + gauss_matrix(rows, cols, stddev, engine)*dcomplex(0, 1);
+	};
+
 	/**
 	 * ±1で表現されるランダムなビット行列を生成
 	 * imatrixで返るのでdoubleなどを利用する場合、random_bits().cast<double>()などでcastすること

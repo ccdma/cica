@@ -30,7 +30,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 
 	const cica::cmatrix T = (S.array() * B.cast<double>().array()).matrix();
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
-	const cica::cmatrix X = A * T + cica::gauss_matrix(signals, samplings, norm_stddev, random_engine);
+	const cica::cmatrix X = A * T + cica::cgauss_matrix(signals, samplings, norm_stddev, random_engine);
 
 	const auto r_res = cica::fastica::fastica(X.real());
 	const auto i_res = cica::fastica::fastica(X.imag());
@@ -47,7 +47,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 500;
+	const auto trials = 50;
 	const auto sep = ",";
 	std::cout << "commit" << sep << COMMIT_ID << std::endl;
 	std::cout << "trials" << sep << trials << std::endl;
@@ -61,7 +61,7 @@ int main(){
 	<< std::endl;	// header
 	const auto samplings = 1000;
 	const auto signals = 3;
-	const auto stddev = 0.1;
+	const auto stddev = 0.05;
 	for(int i=1; i<=1; i++){
 	for(double j=1; j<=40; j++){
 		const auto signals = j+1;
