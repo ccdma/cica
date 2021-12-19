@@ -7,14 +7,17 @@ SRCS += csymbolic.cpp
 
 COMMIT := $(shell git rev-parse --short HEAD | tr -d '\n'; if [ `git status -s -uno | wc -l` -ne 0 ]; then echo "_unstaged"; fi)
 
-$(SRCS:.cpp=):
-	$(CC) $(CFLAGS) $@.cpp -o $@.out -DCOMMIT_ID=\"$(COMMIT)\"
+$(SRCS:.cpp=.out): clean
+	$(CC) $(CFLAGS) $(@:.out=.cpp) -o $@ -DCOMMIT_ID=\"$(COMMIT)\"
 
 adi:
 	$(CC) $(CFLAGS) $@.cpp -liio -o $@.out -DCOMMIT_ID=\"$(COMMIT)\"
 
 clean:
-	rm -f *.out *.csv
+	rm -f *.out 
+
+clean-all: clean
+	rm -f *.csv
 
 RSYNC := rsync -avc --exclude '*.out' --exclude './*.csv' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
 
@@ -30,4 +33,4 @@ push:
 	make send
 	git push
 
-.PHONY: clean send send-force
+.PHONY: clean clean-all send send-force
