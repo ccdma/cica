@@ -6,7 +6,7 @@
 	#define COMMIT_ID "undefined"
 #endif
 
-#include "cica.cpp"
+#include "cica.hpp"
 
 struct test_report {
 

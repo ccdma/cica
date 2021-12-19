@@ -20,4 +20,4 @@
 - [利用者ポータル](https://web.kudpc.kyoto-u.ac.jp/portal/)
 
 ## Tips
-- スパコンでcica.cpp以下の並列処理が入ると何故か遅くなる
+- スパコンでcica.hpp以下の並列処理が入ると何故か遅くなる

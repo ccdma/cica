@@ -7,7 +7,7 @@
 
 #include <cmath>
 #include <cassert>
-#include "cica.cpp"
+#include "cica.hpp"
 
 struct test_report {
 

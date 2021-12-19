@@ -1,3 +1,5 @@
+#pragma once
+
 // #define EIGEN_USE_BLAS
 // #define NDEBUG
 // #define NPROGLESS

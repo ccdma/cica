@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "iio.h"
-#include "cica.cpp"
+#include "cica.hpp"
 
 int receive(struct iio_context *ctx)
 {

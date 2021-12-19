@@ -1,7 +1,7 @@
 #define NDEBUG
 // #define NPROGLESS
 
-#include "cica.cpp"
+#include "cica.hpp"
 
 int main(){
 	const auto signals = 4;
