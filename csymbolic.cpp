@@ -12,6 +12,7 @@
 struct test_report {
 
 	double ber;
+	double rber;
 	double time;
 };
 
@@ -42,13 +43,16 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const cica::imatrix RB = (Z.real().array() * S.real().array() + Z.imag().array() * S.imag().array()).sign().matrix().cast<int>();
 	const double ber = cica::bit_error_rate(B, RB);
 
+	const cica::imatrix rRB = (Z.real().array() * S.real().array()).sign().matrix().cast<int>();
+	const double rber = cica::bit_error_rate(B, rRB);
+
 	const double time = (double)timer.from_start();
-	return test_report{.ber=ber, .time=time};
+	return test_report{.ber=ber, .rber=rber, .time=time};
 }
 
 int main(){
 	const auto trials = 50;
-	const auto sep = ",";
+	const auto sep = "\t";
 	std::cout << "commit" << sep << COMMIT_ID << std::endl;
 	std::cout << "trials" << sep << trials << std::endl;
 	std::cout
@@ -56,6 +60,7 @@ int main(){
 		<< "samplings" << sep
 		<< "stddev" << sep
 		<< "ber" << sep
+		<< "rber" << sep
 		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
@@ -67,6 +72,7 @@ int main(){
 		const auto signals = j+1;
 		int complete = 0;
 		double ber_sum = 0.0;
+		double rber_sum = 0.0;
 		double time = 0.0;
 		// #pragma omp parallel for
 		for (int seed=0; seed<trials; seed++){
@@ -75,6 +81,7 @@ int main(){
 				#pragma omp critical
 				{
 					ber_sum += report.ber;
+					rber_sum += report.rber;
 					time += report.time;
 					complete += 1;
 				}
@@ -85,7 +92,8 @@ int main(){
 			<< samplings << sep
 			<< stddev << sep
 			<< ber_sum/trials << sep 
-			<< complete << sep 
+			<< rber_sum/trials << sep 
+			<< complete << sep
 			<< time/trials
 		<< std::endl;
 	}} // end root for
