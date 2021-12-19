@@ -1,4 +1,4 @@
-// #define NDEBUG
+#define NDEBUG
 #define NPROGLESS
 
 #ifndef COMMIT_ID
@@ -15,15 +15,15 @@ struct test_report {
 	double time;
 };
 
-test_report test(const int signals, const int samplings, const int seed, const double norm_stddev, const int chebyt_n){
+test_report test(const int signals, const int samplings, const int seed, const double norm_stddev){
 	cica::util::timer timer;
-	cica::random_engine random_engine(seed);
+	cica::random_engine random_engine(seed*signals);
 	const cica::imatrix B = cica::random_bits(signals, samplings, random_engine);
 	cica::cmatrix noncenterS(signals, samplings);
 
 	for (int i=0; i<signals; i++){
 		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
-		noncenterS.row(i) = cica::const_powerd_sampling(chebyt_n, 2*M_PI*distribution(random_engine), samplings);
+		noncenterS.row(i) = cica::const_powerd_sampling(2, 2*M_PI*distribution(random_engine), samplings);
 	}
 
 	const cica::cmatrix S = cica::centerize(noncenterS);
@@ -47,7 +47,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 50;
+	const auto trials = 500;
 	const auto sep = ",";
 	std::cout << "commit" << sep << COMMIT_ID << std::endl;
 	std::cout << "trials" << sep << trials << std::endl;
@@ -59,12 +59,11 @@ int main(){
 		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
-	const auto samplings = 10000;
+	const auto samplings = 1000;
 	const auto signals = 3;
 	const auto stddev = 0.01;
-	const auto chebyt_n = 2;
 	for(int i=1; i<=1; i++){
-	for(double j=1; j<=20; j++){
+	for(double j=1; j<=40; j++){
 		const auto signals = j+1;
 		int complete = 0;
 		double ber_sum = 0.0;
@@ -72,7 +71,7 @@ int main(){
 		// #pragma omp parallel for
 		for (int seed=0; seed<trials; seed++){
 			try {
-				const auto report = test(signals, samplings, seed, stddev, chebyt_n);
+				const auto report = test(signals, samplings, seed, stddev);
 				#pragma omp critical
 				{
 					ber_sum += report.ber;
