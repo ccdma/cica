@@ -21,16 +21,15 @@ struct test_report {
 	double time;
 };
 
-test_report test(const int signals, const int samplings, const int seed, const double norm_stddev, const int chebyt_n){
+test_report test(const int signals, const int samplings, const int seed, const double norm_stddev){
 	cica::util::timer timer;
-	cica::random_engine random_engine(seed);
+	cica::random_engine random_engine(seed*signals);
 	const cica::imatrix B = cica::random_bits(signals, samplings, random_engine);
 	cica::matrix noncenterS(signals, samplings);
-	#pragma omp parallel for
+
 	for (int i=0; i<signals; i++){
-		cica::random_engine random_engine(i*(seed+1));
 		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
-		noncenterS.row(i) = cica::chebyt_sampling(chebyt_n, samplings, distribution(random_engine));	// 変更する場合はヘッダも変更する
+		noncenterS.row(i) = cica::chebyt_sampling(2, samplings, distribution(random_engine));
 	}
 	const cica::matrix S = cica::centerize(noncenterS);
 
@@ -65,8 +64,8 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 1;
-	const auto sep = ",";
+	const auto trials = 50;
+	const auto sep = "\t";
 	std::cout << "commit" << sep << COMMIT_ID << std::endl;
 	std::cout << "trials" << sep << trials << std::endl;
 	std::cout
@@ -83,14 +82,12 @@ int main(){
 		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
-	const auto samplings = 30000;
+	const auto samplings = 1000;
 	// const auto signals = 100;
-	const auto stddev = 0.0;
-	const auto chebyt_n = 2;
-	for(int i=1; i<=20; i++){
-	// for(double j=1; j<=20; j++){
-		const int signals = 150+i*5;
-		// const int samplings = 5000 * j;
+	const auto stddev = 0.05;
+	for(int i=1; i<=i; i++){
+	for(double j=1; j<=40; j++){
+		const int signals = j+1;
 		int complete = 0;
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
@@ -103,7 +100,7 @@ int main(){
 		// #pragma omp parallel for
 		for (int seed=0; seed<trials; seed++){
 			try {
-				const auto report = test(signals, samplings, seed, stddev, chebyt_n);
+				const auto report = test(signals, samplings, seed, stddev);
 				#pragma omp critical
 				{
 					ber_sum += report.ber;
@@ -132,6 +129,6 @@ int main(){
 			<< complete << sep 
 			<< time/trials
 		<< std::endl;
-	} // end root for
+	}} // end root for
 	return 0;
 }
