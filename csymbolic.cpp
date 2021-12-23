@@ -64,11 +64,11 @@ int main(){
 		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
-	const auto samplings = 10000;
+	const auto samplings = 1000;
 	// const auto signals = 3;
-	const auto stddev = 0.1;
-	for(int i=0; i<=1; i++){
-	for(double j=1; j<=100; j++){
+	const auto stddev = 0.01;
+	for(int i=1; i<=1; i++){
+	for(double j=1; j<=40; j++){
 		const auto signals = j+1;
 		// const auto stddev = 0.01 * (double)(i*i);
 		// const auto samplings = 1000 * i;
