@@ -120,6 +120,13 @@ namespace cica {
 	};
 
 	/**
+	 * -0.5~0.5までの一様乱数からなる正方行列を生成
+	 */ 
+	cmatrix crandom_uniform_matrix(const int size, random_engine& engine){
+		return random_uniform_matrix(size, engine) + dcomplex(0, 1)*random_uniform_matrix(size, engine);
+	};
+
+	/**
 	 * ガウス分布による行列を生成
 	 * stddev: 標準偏差
 	 */ 
