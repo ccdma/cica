@@ -66,7 +66,7 @@ int main(){
 	<< std::endl;	// header
 	const auto samplings = 1000;
 	// const auto signals = 3;
-	const auto stddev = 0.01;
+	const auto stddev = 0.005;
 	for(int i=1; i<=1; i++){
 	for(double j=1; j<=40; j++){
 		const auto signals = j+1;
