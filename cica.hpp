@@ -75,6 +75,12 @@ namespace cica { namespace util {
 		outputfile.close();
 	}
 
+	int get_seed_by_time(){
+		const auto now = std::chrono::system_clock::now();
+		const int count = now.time_since_epoch().count();
+		return count;
+	}
+
 	class timer {
 
 	public:

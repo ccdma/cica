@@ -18,7 +18,7 @@ struct test_report {
 
 test_report test(const int signals, const int samplings, const int seed, const double norm_stddev){
 	cica::util::timer timer;
-	cica::random_engine random_engine(seed*signals*timer.from_start());
+	cica::random_engine random_engine(seed*signals*cica::util::get_seed_by_time());
 	const cica::imatrix B = cica::random_bits(signals, samplings, random_engine);
 	cica::cmatrix noncenterS(signals, samplings);
 
@@ -51,7 +51,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 10;
+	const auto trials = 1000;
 	const auto sep = "\t";
 	std::cout << "commit" << sep << COMMIT_ID << std::endl;
 	std::cout << "trials" << sep << trials << std::endl;
@@ -65,18 +65,18 @@ int main(){
 		<< "time(ms)"
 	<< std::endl;	// header
 	const auto samplings = 10000;
-	const auto signals = 3;
-	const auto stddev = 0.01;
-	for(int i=0; i<=3; i++){
+	// const auto signals = 3;
+	const auto stddev = 0.1;
+	for(int i=0; i<=1; i++){
 	for(double j=1; j<=100; j++){
 		const auto signals = j+1;
-		const auto stddev = 0.01 * (double)(i*i);
+		// const auto stddev = 0.01 * (double)(i*i);
 		// const auto samplings = 1000 * i;
 		int complete = 0;
 		double ber_sum = 0.0;
 		double rber_sum = 0.0;
 		double time = 0.0;
-		// #pragma omp parallel for
+		#pragma omp parallel for
 		for (int seed=0; seed<trials; seed++){
 			try {
 				const auto report = test(signals, samplings, seed, stddev);
