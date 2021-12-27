@@ -1,4 +1,4 @@
-// #define NDEBUG
+#define NDEBUG
 #define NPROGLESS
 
 #ifndef COMMIT_ID
