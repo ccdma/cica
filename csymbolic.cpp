@@ -71,7 +71,7 @@ int main(){
 	std::vector<int> v2 = cica::util::range(2, 100);
 	for(const auto& i : v1){
 	for(const auto& j : v2){
-		const auto samplings = 100*(int)std::pow(i, 2);
+		const auto samplings = 100*(int)std::pow(2, i);
 		const auto signals = j;
 
 		int complete = 0;
