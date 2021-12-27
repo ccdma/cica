@@ -23,7 +23,7 @@ struct test_report {
 
 test_report test(const int signals, const int samplings, const int seed, const double norm_stddev){
 	cica::util::timer timer;
-	cica::random_engine random_engine(seed*signals);
+	cica::random_engine random_engine(cica::util::get_seed_by_time());
 	const cica::imatrix B = cica::random_bits(signals, samplings, random_engine);
 	cica::matrix noncenterS(signals, samplings);
 
@@ -85,12 +85,13 @@ int main(){
 	// const auto samplings = 10000;
 	// const auto signals = 100;
 	const auto stddev = 0.0;
-
 	std::vector<int> v1{1000, 2000, 5000};
-	std::vector<int> v2 = cica::util::range(1, 130);
+	std::vector<int> v2 = cica::util::range(2, 100);
 	for(const auto& samplings : v1){
 	for(const auto& j : v2){
-		const int signals = j+1;
+		const int signals = j;
+		if (samplings < 5000) break;
+		if (signals < 70) break;
 		int complete = 0;
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
