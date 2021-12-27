@@ -131,7 +131,6 @@ int main(){
 			<< complete << sep 
 			<< time/trials
 		<< std::endl;
-		if (ber_sum/trials > 0.3) break;
 	}} // end root for
 	return 0;
 }
