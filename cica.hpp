@@ -81,6 +81,14 @@ namespace cica { namespace util {
 		return count;
 	}
 
+	std::vector<int> range(const int start, const int end, const int step=1) {
+		std::vector<int> v;
+		for (int i=start; i<end; i+=step) {
+			v.push_back(i);
+		}
+		return v;
+	}
+
 	class timer {
 
 	public:
