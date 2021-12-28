@@ -67,11 +67,10 @@ int main(){
 	// const auto samplings = 1000;
 	// const auto signals = 100;
 	const auto stddev = 0.0;
-	std::vector<int> v1 = cica::util::range(1, 10);
-	std::vector<int> v2 = cica::util::range(2, 100);
-	for(const auto& i : v1){
+	std::vector<int> v1{1000, 2000, 5000};
+	std::vector<int> v2 = cica::util::range(2, 150);
+	for(const auto& samplings : v1){
 	for(const auto& j : v2){
-		const auto samplings = 100*(int)std::pow(2, i);
 		const auto signals = j;
 
 		int complete = 0;
@@ -100,7 +99,7 @@ int main(){
 			<< complete << sep
 			<< time/trials
 		<< std::endl;
-		if (ber_sum/trials > 0.3) break;
+		if (ber_sum/trials > 0.1) break;
 	}} // end root for
 	return 0;
 }
