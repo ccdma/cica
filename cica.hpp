@@ -178,7 +178,7 @@ namespace cica {
 
 	/**
 	 * 分散共分散行列を計算する
-	 * E[(M−μ)(M−μ)^⊤]である
+	 * E[(M−μ)(M−μ)^T]である
 	 */ 
 	matrix cov(const matrix& M){
 		const matrix M_center = centerize(M);
