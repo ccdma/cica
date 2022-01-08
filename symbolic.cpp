@@ -85,8 +85,8 @@ int main(){
 	// const auto samplings = 1000;
 	// const auto signals = 100;
 	const auto stddev = 0.0;
-	std::vector<int> v1{5, 10, 20, 40};
-	std::vector<int> v2 = cica::util::range(1, 10);
+	std::vector<int> v1{10};
+	std::vector<int> v2 = cica::util::range(1, 100);
 	for(const auto& signals : v1){
 	for(const auto& j : v2){
 		const int samplings = j*1000;
