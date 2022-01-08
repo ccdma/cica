@@ -436,7 +436,8 @@ namespace cica { namespace fastica {
 	 * 
 	 * X: 観測信号
 	 * 
-	 * Xについて、内部で中心化は行うが先にに中心化されていることが望ましい（元信号Sの中心化ができていれば、混合されたXも自然と中心化されるはず）
+	 * Xについて、内部で中心化は行うが先にに中心化されていることが望ましい
+	 * （元信号Sの中心化ができていれば、混合されたXも自然と中心化されるはず）
 	 * 		→ 中心化されているものを扱っていれば、2乗和誤差などの計算でズレが生じない
 	 * 
 	 * [reference]
@@ -570,7 +571,8 @@ namespace cica { namespace easi {
 	 * EASI(バッチ処理)
 	 * シュミレーション時はfasticaと同じように扱える分、easiクラスよりも利用しやすい
 	 * 
-	 * final_recover: trueの場合、学習後の復元行列でXを再計算する。逆にfalseの場合、resultの復元信号は復元行列に対応しないので注意すること
+	 * final_recover: trueの場合、学習後の復元行列でXを再計算する。
+	 * 逆にfalseの場合、resultの復元信号は復元行列に対応しないので注意すること
 	 */ 
 	result batch_easi(const matrix& X, const bool final_recover=true) {
 		easi easi(X.rows());
