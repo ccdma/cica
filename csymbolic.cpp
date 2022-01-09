@@ -67,7 +67,7 @@ int main(){
 	// const auto samplings = 1000;
 	// const auto signals = 100;
 	const auto stddev = 0.0;
-	std::vector<int> v1 = cica::util::range(200, 3200, 200); // v1{10, 20, 30}
+	std::vector<int> v1 = cica::util::range(3400, 6000, 200); // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(2, 150);
 	for(const auto& samplings : v1){
 	for(const auto& j : v2){
