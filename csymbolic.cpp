@@ -51,7 +51,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 100;
+	const auto trials = 1000;
 	const auto sep = "\t";
 	std::cout << "commit" << sep << COMMIT_ID << std::endl;
 	std::cout << "trials" << sep << trials << std::endl;
