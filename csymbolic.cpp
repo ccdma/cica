@@ -64,12 +64,12 @@ int main(){
 		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
-	// const auto samplings = 1000;
+	const auto samplings = 1000;
 	// const auto signals = 100;
-	const auto stddev = 0.0;
-	std::vector<int> v1 = cica::util::range(3400, 6000, 200); // v1{10, 20, 30}
+	// const auto stddev = 0.0;
+	std::vector<double> v1{0.02, 0.05}; // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(2, 150);
-	for(const auto& samplings : v1){
+	for(const auto& stddev : v1){
 	for(const auto& j : v2){
 		const auto signals = j;
 
@@ -99,7 +99,7 @@ int main(){
 			<< complete << sep
 			<< time/trials
 		<< std::endl;
-		if (ber_sum/trials > 0.001) break;
+		if (ber_sum/trials > 0.1) break;
 	}} // end root for
 	return 0;
 }
