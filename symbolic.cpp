@@ -85,11 +85,10 @@ int main(){
 	// const auto samplings = 1000;
 	// const auto signals = 100;
 	const auto stddev = 0.0;
-	std::vector<int> v1{10};
-	std::vector<int> v2 = cica::util::range(1, 100);
-	for(const auto& signals : v1){
-	for(const auto& j : v2){
-		const int samplings = j*1000;
+	std::vector<int> v1{1000};
+	std::vector<int> v2 = cica::util::range(2, 100);
+	for(const auto& samplings : v1){
+	for(const auto& signals : v2){
 		int complete = 0;
 		double ber_sum = 0.0;
 		double cte_sum = 0.0;
