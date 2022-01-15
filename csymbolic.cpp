@@ -99,7 +99,7 @@ int main(){
 			<< complete << sep
 			<< time/trials
 		<< std::endl;
-		if (ber_sum/trials > 0.005) break;
+		if (ber_sum/trials > 0.01) break;
 	}} // end root for
 	return 0;
 }
