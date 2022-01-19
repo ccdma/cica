@@ -33,8 +33,8 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::cmatrix X = A * T + cica::cgauss_matrix(signals, samplings, norm_stddev, random_engine);
 
-	const auto r_res = cica::easi::batch_easi(X.real()); // cica::fastica::fastica(X.real());
-	const auto i_res = cica::easi::batch_easi(X.imag()); // cica::fastica::fastica(X.imag());
+	const auto r_res = cica::fastica::fastica(X.real());
+	const auto i_res = cica::fastica::fastica(X.imag());
 
 	const cica::imatrix rP = cica::estimate_circulant_matrix(A, r_res.W);
 	const cica::imatrix iP = cica::estimate_circulant_matrix(A, i_res.W);
@@ -51,7 +51,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 1000;
+	const auto trials = 10000;
 	const auto sep = "\t";
 	std::cout << "commit" << sep << COMMIT_ID << std::endl;
 	std::cout << "trials" << sep << trials << std::endl;
@@ -67,7 +67,7 @@ int main(){
 	// const auto samplings = 1000;
 	// const auto signals = 100;
 	const auto stddev = 0.01;
-	std::vector<int> v1{500}; // v1{10, 20, 30}
+	std::vector<int> v1{50000}; // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(2, 150);
 	for(const auto& samplings : v1){
 	for(const auto& j : v2){
@@ -99,7 +99,7 @@ int main(){
 			<< complete << sep
 			<< time/trials
 		<< std::endl;
-		if (ber_sum/trials > 0.01) break;
+		if (ber_sum/trials > 0.1) break;
 	}} // end root for
 	return 0;
 }
