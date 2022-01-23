@@ -119,17 +119,17 @@ int main(){
 			<< signals << sep
 			<< samplings << sep
 			<< stddev << sep
-			<< mse_sum/trials << sep
-			<< correlaion_mse_sum/trials << sep
-			<< res_correlaion_mse_sum/trials << sep
-			<< loop_ave_sum/trials << sep
-			<< ber_sum/trials << sep 
-			<< cte_sum/trials << sep 
-			<< ncte_sum/trials << sep 
+			<< mse_sum/complete << sep
+			<< correlaion_mse_sum/complete << sep
+			<< res_correlaion_mse_sum/complete << sep
+			<< loop_ave_sum/complete << sep
+			<< ber_sum/complete << sep 
+			<< cte_sum/complete << sep 
+			<< ncte_sum/complete << sep 
 			<< complete << sep 
-			<< time/trials
+			<< time/complete
 		<< std::endl;
-		if (ber_sum/trials > 0.2) break;
+		if (ber_sum/complete > 0.2) break;
 	}} // end root for
 	return 0;
 }

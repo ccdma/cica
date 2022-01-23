@@ -51,7 +51,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 10000;
+	const auto trials = 10;
 	const auto sep = "\t";
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
 	std::cout
@@ -66,8 +66,8 @@ int main(){
 	// const auto samplings = 1000;
 	// const auto signals = 100;
 	const auto stddev = 0.01;
-	std::vector<int> v1{50000}; // v1{10, 20, 30}
-	std::vector<int> v2 = cica::util::range(2, 150);
+	std::vector<int> v1 = cica::util::range(900, 2000, 100); // v1{10, 20, 30}
+	std::vector<int> v2 = cica::util::range(20, 150);
 	for(const auto& samplings : v1){
 	for(const auto& j : v2){
 		const auto signals = j;
@@ -93,12 +93,12 @@ int main(){
 			<< signals << sep
 			<< samplings << sep
 			<< stddev << sep
-			<< ber_sum/trials << sep 
-			<< rber_sum/trials << sep 
+			<< ber_sum/complete << sep 
+			<< rber_sum/complete << sep 
 			<< complete << sep
-			<< time/trials
+			<< time/complete
 		<< std::endl;
-		if (ber_sum/trials > 0.1) break;
+		if (ber_sum/complete > 0.1) break;
 	}} // end root for
 	return 0;
 }
