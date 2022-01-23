@@ -49,6 +49,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const cica::matrix Z = P.cast<double>().transpose() * res.Y;
 	const cica::imatrix RB = (Z.array() * S.array()).sign().matrix().cast<int>();
 	const double ber = cica::bit_error_rate(B, RB);
+	if (ber > 1) throw cica::exception::base("ber invalid error");
 	const double cte = cica::cross_talk_error(A, res.W);
 	const double ncte = cica::normal_cross_talk_error(A, res.W);
 	const double mse = cica::mean_squared_error(T, Z);

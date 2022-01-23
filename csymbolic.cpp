@@ -43,6 +43,8 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	const cica::imatrix RB = (Z.real().array() * S.real().array() + Z.imag().array() * S.imag().array()).sign().matrix().cast<int>();
 	const double ber = cica::bit_error_rate(B, RB);
 
+	if (ber > 1) throw cica::exception::base("ber invalid error");
+
 	const cica::imatrix rRB = (Z.real().array() * S.real().array()).sign().matrix().cast<int>();
 	const double rber = cica::bit_error_rate(B, rRB);
 
