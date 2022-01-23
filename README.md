@@ -16,6 +16,10 @@
 ## スパコン関連
 - [スーパーコンピュータシステムの使い方](https://web.kudpc.kyoto-u.ac.jp/manual/ja)
 - [利用者ポータル](https://web.kudpc.kyoto-u.ac.jp/portal/)
+- 実行中のジョブの出力を確認する
+```
+qstat | tail -n +3 | awk '{if( $5 == "R" ){print $1}}' | head -n1 | xargs qcat -o
+```
 
 ## Tips
 - スパコンでcica.hpp以下の並列処理が入ると何故か遅くなる
