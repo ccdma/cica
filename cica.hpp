@@ -84,10 +84,13 @@ namespace cica { namespace util {
 	/**
 	 * startとendを含むリストを返す
 	 */
-	std::vector<int> range(const int start, const int end, const int step=1) {
+	std::vector<int> range(const int start, const int end, const int step=1, const bool reverse=false) {
 		std::vector<int> v;
 		for (int i=start; i<=end; i+=step) {
 			v.push_back(i);
+		}
+		if (reverse) {
+			std::reverse(v.begin(), v.end());
 		}
 		return v;
 	}
