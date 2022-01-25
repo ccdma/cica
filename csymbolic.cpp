@@ -70,7 +70,7 @@ int main(){
 	<< std::endl;	// header
 	// const auto samplings = 1000;
 	// const auto signals = 100;
-	const auto stddev = 0.05;
+	const auto stddev = 0.0;
 	std::vector<int> v1 = cica::util::range(10000, 50000, 10000); // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(2, 500);
 	for(const auto& samplings : v1){
