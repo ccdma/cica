@@ -70,9 +70,9 @@ int main(){
 	<< std::endl;	// header
 	// const auto samplings = 1000;
 	// const auto signals = 100;
-	const auto stddev = 0.0402;
-	std::vector<int> v1 = cica::util::range(10000, 30000, 10000); // v1{10, 20, 30}
-	std::vector<int> v2 = cica::util::range(80, 500);
+	const auto stddev = 0.0225;
+	std::vector<int> v1 = cica::util::range(1000, 3000, 1000); // v1{10, 20, 30}
+	std::vector<int> v2 = cica::util::range(2, 500);
 	for(const auto& samplings : v1){
 	for(const auto& j : v2){
 		// スリープ処理
