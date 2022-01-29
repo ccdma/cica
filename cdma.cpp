@@ -34,8 +34,7 @@ test_report test(const int K, const int N, const int seed, const float stddev){
 	const cica::cmatrix B = BPSK_DATA.replicate(1, N); //拡散符号分の長さにする
 	cica::cmatrix S(K, N);
 	for (int i=0; i<K; i++){
-		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
-		S.row(i) = cica::const_powerd_sampling(2, 2*M_PI*distribution(random_engine), N);
+		S.row(i) = cica::weyl_sampling((double)i/K, (double)1/(2*N), N);
 	}
 
 	const cica::cmatrix T = (S.array() * B.array()).matrix();
@@ -55,7 +54,7 @@ test_report test(const int K, const int N, const int seed, const float stddev){
 int main(){
 	
 	const auto trials = 1000;
-	const auto sep = "\t";
+	const auto sep = ",";
 	auto timer = new cica::util::timer();
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
 	std::cout
@@ -70,7 +69,7 @@ int main(){
 	// const auto K = 100;
 	const auto stddev = 0.01;
 	std::vector<int> v1{31}; // v1{10, 20, 30}
-	std::vector<int> v2 = cica::util::range(2, 30);
+	std::vector<int> v2 = cica::util::range(40, 60);
 	for(const auto& N : v1){
 	for(const auto& K : v2){
 
