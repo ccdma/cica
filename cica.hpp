@@ -275,7 +275,7 @@ namespace cica {
 		return S;
 	}
 
-	cvector weyl_sampling(const float low_k, const float delta_k, const int len){
+	cvector weyl_sampling(const double low_k, const double delta_k, const int len){
 		cvector S(len);
 		for (int i=0; i<len; i++){
 			const auto x_raw = i * low_k + delta_k;
