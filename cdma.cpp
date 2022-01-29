@@ -53,7 +53,7 @@ test_report test(const int K, const int N, const int seed, const float stddev){
 
 int main(){
 	
-	const auto trials = 1000;
+	const auto trials = 1000*1000;
 	const auto sep = ",";
 	auto timer = new cica::util::timer();
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
@@ -69,7 +69,7 @@ int main(){
 	// const auto K = 100;
 	const auto stddev = 0.01;
 	std::vector<int> v1{31}; // v1{10, 20, 30}
-	std::vector<int> v2 = cica::util::range(40, 60);
+	std::vector<int> v2 = cica::util::range(2, 60);
 	for(const auto& N : v1){
 	for(const auto& K : v2){
 
@@ -96,7 +96,7 @@ int main(){
 			<< complete << sep
 			<< time/complete
 		<< std::endl;
-		if (ber_sum/complete > 0.1) break;
+		if (ber_sum/complete > 0.005) break;
 	}} // end root for
 	return 0;
 }
