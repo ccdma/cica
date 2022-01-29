@@ -1,5 +1,5 @@
 CC := icpc
-CFLAGS := -I ./include/ -qopenmp -ipo -O3 -xHost -std=c++11 -mkl=sequential -mcmodel=medium -shared-intel
+CFLAGS := -I ./include/ -qopenmp -ipo -O3 -fp-model fast=2 -xHost -std=c++11 -mkl=sequential -mcmodel=medium -shared-intel
 SRCS += single.cpp
 SRCS += symbolic.cpp
 SRCS += csymbolic.cpp
