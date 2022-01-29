@@ -1,0 +1,20 @@
+CC := icpc
+CFLAGS := -I ./include/ -qopenmp -fast -std=c++11 -mkl=sequential mcmodel=medium -shared-intel
+SRCS += single.cpp
+SRCS += symbolic.cpp
+SRCS += csymbolic.cpp
+
+# https://helpdesk.t3.gsic.titech.ac.jp/manuals/intel_compiler/pdf/intel_compiler.pdf
+
+$(SRCS:.cpp=.out): clean
+	$(CC) $(CFLAGS) $(@:.out=.cpp) -o $@ -DCOMMIT_ID=\"$(COMMIT)\" -DEIGEN_USE_MKL_ALL
+
+RSYNC := rsync -avc --exclude '*.out' --exclude './*.csv' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
+
+send:
+	$(RSYNC)
+
+send-force:
+	$(RSYNC) --delete
+
+.PHONY: clean clean-all send send-force
