@@ -6,6 +6,8 @@ SRCS += csymbolic.cpp
 
 # https://helpdesk.t3.gsic.titech.ac.jp/manuals/intel_compiler/pdf/intel_compiler.pdf
 
+COMMIT := $(shell git rev-parse --short HEAD | tr -d '\n'; if [ `git status -s -uno | wc -l` -ne 0 ]; then echo "_unstaged"; fi)
+
 $(SRCS:.cpp=.out): clean
 	$(CC) $(CFLAGS) $(@:.out=.cpp) -o $@ -DCOMMIT_ID=\"$(COMMIT)\" -DEIGEN_USE_MKL_ALL
 
@@ -17,4 +19,4 @@ send:
 send-force:
 	$(RSYNC) --delete
 
-.PHONY: clean clean-all send send-force
+.PHONY: send send-force
