@@ -13,10 +13,16 @@ $(SRCS:.cpp=.out): clean
 
 RSYNC := rsync -avc --exclude '*.out' --exclude './*.csv' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
 
+clean:
+	rm -f *.out 
+
+clean-all: clean
+	rm -f *.csv
+
 send:
 	$(RSYNC)
 
 send-force:
 	$(RSYNC) --delete
 
-.PHONY: send send-force
+.PHONY: clean clean-all send send-force
