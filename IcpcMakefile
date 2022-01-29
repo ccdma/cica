@@ -1,10 +1,11 @@
 CC := icpc
-CFLAGS := -I ./include/ -qopenmp -fast -std=c++11 -mkl=sequential mcmodel=medium -shared-intel
+CFLAGS := -I ./include/ -qopenmp -ipo -O3 -xHost -std=c++11 -mkl=sequential -mcmodel=medium -shared-intel
 SRCS += single.cpp
 SRCS += symbolic.cpp
 SRCS += csymbolic.cpp
 
 # https://helpdesk.t3.gsic.titech.ac.jp/manuals/intel_compiler/pdf/intel_compiler.pdf
+# https://web.kudpc.kyoto-u.ac.jp/manual/ja/compilers/intel#modules
 
 COMMIT := $(shell git rev-parse --short HEAD | tr -d '\n'; if [ `git status -s -uno | wc -l` -ne 0 ]; then echo "_unstaged"; fi)
 
