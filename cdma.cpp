@@ -38,8 +38,8 @@ test_report test(const int K, const int N, const int seed, const float stddev){
 	}
 
 	const cica::cmatrix T = (S.array() * B.array()).matrix();
-	const cica::vector A = cica::vector::Ones(K);
-	const cica::cvector AWGN = cica::cgauss_matrix(1, N, stddev, random_engine).row(0);
+	const cica::vector A = cica::vector::Ones(K);//cica::random_uniform_matrix(K, 1, random_engine).col(0);
+	const cica::cvector AWGN = cica::cgauss_matrix(N, 1, stddev, random_engine).col(0);
 	const cica::cvector X = T.transpose() * A + AWGN;
 
 	const cica::cmatrix RB = (X.transpose().replicate(K, 1).array() * S.conjugate().array()).matrix();
@@ -67,7 +67,7 @@ int main(){
 	<< std::endl;	// header
 	// const auto N = 1000;
 	// const auto K = 100;
-	const auto stddev = 0.01;
+	const auto stddev = 0.0402;
 	std::vector<int> v1{31}; // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(2, 60);
 	for(const auto& N : v1){
