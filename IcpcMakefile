@@ -12,7 +12,7 @@ COMMIT := $(shell git rev-parse --short HEAD | tr -d '\n'; if [ `git status -s -
 $(SRCS:.cpp=.out): clean
 	$(CC) $(CFLAGS) $(@:.out=.cpp) -o $@ -DCOMMIT_ID=\"$(COMMIT)\" -DEIGEN_USE_MKL_ALL
 
-RSYNC := rsync -avc --exclude '*.out' --exclude './*.csv' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
+RSYNC := rsync -avc --exclude '*.out' --exclude '*.csv' ./ b36697@cinnamon.kudpc.kyoto-u.ac.jp:~/cica
 
 clean:
 	rm -f *.out 
