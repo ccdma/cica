@@ -268,6 +268,16 @@ namespace cica {
 		return S;
 	}
 
+	cvector weyl_sampling(const float low_k, const float delta_k, const int len){
+		cvector S(len);
+		for (int i=0; i<len; i++){
+			const auto x_raw = i * low_k + delta_k;
+			const auto x = x_raw - std::floor(x_raw);
+			S(i) = std::exp(dcomplex(0, 2*M_PI*x));
+		}
+		return S;
+	}
+
 	/**
 	 * S ≒ P.T*Y なる循環行列Pを生成します
 	 * 
