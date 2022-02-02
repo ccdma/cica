@@ -24,9 +24,9 @@ struct test_report {
  * @param stddev 
  * @return test_report 
  */
-test_report test(const int K, const int N, const int seed, const float stddev){
+test_report test(const int K, const int N, const int seed, const double stddev){
 	cica::util::timer timer;
-	cica::random_engine random_engine(K*N*cica::util::get_seed_by_time());
+	cica::random_engine random_engine(cica::util::get_seed_by_time());
 
 	const cica::ivector BITS = cica::random_bits(1, K, random_engine).row(0);
 	const cica::cvector BPSK_DATA = BITS.cast<double>(); // BPSK
@@ -34,7 +34,7 @@ test_report test(const int K, const int N, const int seed, const float stddev){
 	const cica::cmatrix B = BPSK_DATA.replicate(1, N); //拡散符号分の長さにする
 	cica::cmatrix S(K, N);
 	for (int i=0; i<K; i++){
-		S.row(i) = cica::weyl_sampling((i+1.0)/(K+1.0), 1.0/(2.0*N), N);
+		S.row(i) = cica::weyl_sampling((double)i/K+1.0/(2.0*N), 0, N);
 	}
 
 	const cica::cmatrix T = (S.array() * B.array()).matrix();
@@ -53,7 +53,7 @@ test_report test(const int K, const int N, const int seed, const float stddev){
 
 int main(){
 	
-	const auto trials = 1000*10;
+	const auto trials = 1000;
 	const auto sep = ",";
 	auto timer = new cica::util::timer();
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
@@ -67,9 +67,9 @@ int main(){
 	<< std::endl;	// header
 	// const auto N = 1000;
 	// const auto K = 100;
-	const auto stddev = 0.0402;
+	const auto stddev = 0.01;
 	std::vector<int> v1{31}; // v1{10, 20, 30}
-	std::vector<int> v2 = cica::util::range(2, 60);
+	std::vector<int> v2 = cica::util::range(2, 100);
 	for(const auto& N : v1){
 	for(const auto& K : v2){
 
@@ -96,7 +96,7 @@ int main(){
 			<< complete << sep
 			<< time/complete
 		<< std::endl;
-		if (ber_sum/complete > 0.005) break;
+		if (ber_sum/complete > 0.1) break;
 	}} // end root for
 	return 0;
 }
