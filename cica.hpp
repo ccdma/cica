@@ -127,10 +127,17 @@ namespace cica {
 	/**
 	 * -0.5~0.5までの一様乱数からなる正方行列を生成
 	 */ 
-	matrix random_uniform_matrix(const int size, random_engine& engine){
+	matrix random_uniform_matrix(const int rows, const int cols, random_engine& engine){
 		std::uniform_real_distribution<double> distribution(-0.5, 0.5);
 		auto generator = [&] (double dummy) {return distribution(engine);};
-		return matrix::Zero(size, size).unaryExpr(generator);
+		return matrix::Zero(rows, cols).unaryExpr(generator);
+	};
+
+	/**
+	 * -0.5~0.5までの一様乱数からなる正方行列を生成
+	 */ 
+	matrix random_uniform_matrix(const int size, random_engine& engine){
+		return random_uniform_matrix(size, size, engine);
 	};
 
 	/**
@@ -268,7 +275,7 @@ namespace cica {
 		return S;
 	}
 
-	cvector weyl_sampling(const float low_k, const float delta_k, const int len){
+	cvector weyl_sampling(const double low_k, const double delta_k, const int len){
 		cvector S(len);
 		for (int i=0; i<len; i++){
 			const auto x_raw = i * low_k + delta_k;

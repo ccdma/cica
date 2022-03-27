@@ -24,47 +24,79 @@ struct test_report {
  * @param stddev 
  * @return test_report 
  */
-test_report test(const int K, const int N, const float stddev){
+test_report test(const int K, const int N, const int seed, const double stddev){
 	cica::util::timer timer;
-	cica::random_engine random_engine(K*N*cica::util::get_seed_by_time());
-	const cica::ivector BITS = cica::random_bits(1, N, random_engine).row(0);
+	cica::random_engine random_engine(cica::util::get_seed_by_time());
 
-	const cica::vector DBITS = BITS.cast<double>(); // BPSK
+	const cica::ivector BITS = cica::random_bits(1, K, random_engine).row(0);
+	const cica::cvector BPSK_DATA = BITS.cast<double>(); // BPSK
 
-	cica::matrix B(K, N);
-	for (int i=0; i<K; i++){
-		B.row(i) = DBITS;
-	}
-
+	const cica::cmatrix B = BPSK_DATA.replicate(1, N); //拡散符号分の長さにする
 	cica::cmatrix S(K, N);
 	for (int i=0; i<K; i++){
-		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
-		S.row(i) = cica::const_powerd_sampling(2, 2*M_PI*distribution(random_engine), N);
+		S.row(i) = cica::weyl_sampling((double)i/K+1.0/(2.0*N), 0, N);
 	}
 
-	const cica::matrix T = (S.array() * B.array()).matrix();
-	const cica::vector A = cica::vector::Ones(N);
-	const cica::vector AWGN = cica::cgauss_matrix(1, N, stddev, random_engine).row(0);
-	const cica::cvector X = A * T + AWGN;
+	const cica::cmatrix T = (S.array() * B.array()).matrix();
+	const cica::vector A = cica::vector::Ones(K);//cica::random_uniform_matrix(K, 1, random_engine).col(0);
+	const cica::cvector AWGN = cica::cgauss_matrix(N, 1, stddev, random_engine).col(0);
+	const cica::cvector X = T.transpose() * A + AWGN;
 
-	const cica::matrix RB = (X.array() * S.conjugate().array()).matrix().rowwise().mean();
+	const cica::cmatrix RB = (X.transpose().replicate(K, 1).array() * S.conjugate().array()).matrix();
 	
+	const cica::cvector RBPSK_DATA = RB.rowwise().mean();	// BPSKの形に戻す
+	const cica::ivector RBITS = RBPSK_DATA.real().array().sign().matrix().cast<int>();
 
+	const auto ber = cica::bit_error_rate(BITS, RBITS);
+	return test_report{.ber=ber, .time=(double)timer.from_start()}; 
 }
 
 int main(){
 	
-	const cica::cvector S = cica::weyl_sampling(std::sqrt(0.1), 0.1, 1000);
+	const auto trials = 1000;
+	const auto sep = ",";
+	auto timer = new cica::util::timer();
+	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
+	std::cout
+		<< "K" << sep
+		<< "N" << sep
+		<< "stddev" << sep
+		<< "ber" << sep
+		<< "complete" << sep
+		<< "time(ms)"
+	<< std::endl;	// header
+	// const auto N = 1000;
+	// const auto K = 100;
+	const auto stddev = 0.01;
+	std::vector<int> v1{31}; // v1{10, 20, 30}
+	std::vector<int> v2 = cica::util::range(2, 100);
+	for(const auto& N : v1){
+	for(const auto& K : v2){
 
-	const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
-
-	for (int i=0; i<1000; i++){
-		std::cout << S(i).real() << ",";
-	}
-	std::cout << std::endl;
-	for (int i=0; i<1000; i++){
-		std::cout << S(i).imag() << ",";
-	}
-	std::cout << std::endl;
+		int complete = 0;
+		double ber_sum = 0.0;
+		double time = 0.0;
+		#pragma omp parallel for
+		for (int seed=0; seed<trials; seed++){
+			try {
+				const auto report = test(K, N, seed, stddev);
+				#pragma omp critical
+				{
+					ber_sum += report.ber;
+					time += report.time;
+					complete += 1;
+				}
+			} catch (cica::exception::base e) {}
+		}
+		std::cout
+			<< K << sep
+			<< N << sep
+			<< stddev << sep
+			<< ber_sum/complete << sep 
+			<< complete << sep
+			<< time/complete
+		<< std::endl;
+		if (ber_sum/complete > 0.1) break;
+	}} // end root for
 	return 0;
 }
