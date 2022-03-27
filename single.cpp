@@ -1,5 +1,5 @@
 #define NDEBUG
-// #define NPROGLESS
+#define NPROGLESS
 
 #include "cica.hpp"
 
@@ -8,17 +8,19 @@ int main(){
 	const auto samplings = 1000;
 	
 	cica::matrix noncenterS(signals, samplings);
-	for (int i=0; i<signals-2; i++){
-		noncenterS.row(i) = cica::chebyt_sampling(2, samplings, (i+1.0)/10.0);
+	double prev_init = 0.7;
+	for (int i=0; i<signals; i++){
+		noncenterS.row(i) = cica::chebyt_sampling(2, samplings, prev_init);
+		prev_init = cica::eval_chebyshev(2, prev_init);
 	}
-	for (int i=2; i<signals; i++){
-		noncenterS.row(i) = cica::sine_sampling(std::sqrt(i-1)/10.0, samplings);
-	}
+	// for (int i=2; i<signals; i++){
+	// 	noncenterS.row(i) = cica::sine_sampling(std::sqrt(i-1)/10.0, samplings);
+	// }
 	
-	cica::random_engine random_engine(1);
+	cica::random_engine random_engine(2);
 	// noncenterS = noncenterS + cica::gauss_matrix(signals, samplings, 0.1, random_engine);
 
-	const cica::matrix S = cica::centerize(noncenterS);
+	const cica::matrix S = noncenterS;
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
 	const cica::matrix X = A * S;
 	auto result = cica::fastica::fastica(X);

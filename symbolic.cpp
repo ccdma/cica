@@ -65,7 +65,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 10;
+	const auto trials = 100;
 	const auto sep = "\t";
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
 	std::cout
@@ -85,8 +85,8 @@ int main(){
 	// const auto samplings = 1000;
 	// const auto signals = 100;
 	const auto stddev = 0.0;
-	std::vector<int> v1{1000};
-	std::vector<int> v2 = cica::util::range(2, 100);
+	std::vector<int> v1{100, 300, 500};
+	std::vector<int> v2 = cica::util::range(2, 20);
 	for(const auto& samplings : v1){
 	for(const auto& signals : v2){
 		int complete = 0;
@@ -98,7 +98,7 @@ int main(){
 		double res_correlaion_mse_sum = 0.0;
 		double loop_ave_sum = 0.0;
 		double time = 0.0;
-		// #pragma omp parallel for
+		#pragma omp parallel for
 		for (int seed=0; seed<trials; seed++){
 			try {
 				const auto report = test(signals, samplings, seed, stddev);
@@ -130,7 +130,7 @@ int main(){
 			<< complete << sep 
 			<< time/complete
 		<< std::endl;
-		if (ber_sum/complete > 0.2) break;
+		// if (ber_sum/complete > 0.2) break;
 	}} // end root for
 	return 0;
 }
