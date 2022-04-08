@@ -37,7 +37,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 
 	const auto r_res = cica::fastica::fastica(X.real());
 	const auto i_res = cica::fastica::fastica(X.imag());
-
+ 
 	const cica::imatrix rP = cica::estimate_circulant_matrix(A, r_res.W);
 	const cica::imatrix iP = cica::estimate_circulant_matrix(A, i_res.W);
 
@@ -70,17 +70,17 @@ int main(){
 	<< std::endl;	// header
 	// const auto samplings = 1000;
 	// const auto signals = 100;
-	const auto stddev = 0.0225;
-	std::vector<int> v1 = cica::util::range(3000, 10000, 2000); // v1{10, 20, 30}
+	const auto stddev = 0.2;
+	std::vector<int> v1 = cica::util::range(200, 3000, 100); // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(2, 500);
 	for(const auto& samplings : v1){
 	for(const auto& j : v2){
 		// スリープ処理
-		// if (timer->from_start() > 10 * 60 * 1000) {
-		// 	std::this_thread::sleep_for(std::chrono::minutes(1));
-		// 	delete timer;
-		// 	timer = new cica::util::timer();
-		// }
+		if (timer->from_start() > 10 * 60 * 1000) {
+			std::this_thread::sleep_for(std::chrono::minutes(1));
+			delete timer;
+			timer = new cica::util::timer();
+		}
 		const auto signals = j;
 
 		int complete = 0;
