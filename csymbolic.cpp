@@ -109,7 +109,7 @@ int main(){
 			<< complete << sep
 			<< time/complete
 		<< std::endl;
-		if (ber_sum/complete > 0.0005) break;
+		if (ber_sum/complete > 0.005) break;
 	}} // end root for
 	return 0;
 }
