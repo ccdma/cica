@@ -34,11 +34,11 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 	const cica::cmatrix B = BPSK_DATA.replicate(1, N); //拡散符号分の長さにする
 	cica::cmatrix S(K, N);
 	for (int i=0; i<K; i++){
-		S.row(i) = cica::weyl_sampling((double)i/K+1.0/(2.0*N), 0, N);
+		S.row(i) = cica::const_powerd_sampling(2, random_engine(), N); //cica::weyl_sampling((double)i/K+1.0/(2.0*N), 0, N);
 	}
 
 	const cica::cmatrix T = (S.array() * B.array()).matrix();
-	const cica::vector A = cica::vector::Ones(K);//cica::random_uniform_matrix(K, 1, random_engine).col(0);
+	const cica::vector A = cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs(); //cica::vector::Ones(K);
 	const cica::cvector AWGN = cica::cgauss_matrix(N, 1, stddev, random_engine).col(0);
 	const cica::cvector X = T.transpose() * A + AWGN;
 
@@ -53,7 +53,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 
 int main(){
 	
-	const auto trials = 1000;
+	const auto trials = 1000000;
 	const auto sep = ",";
 	auto timer = new cica::util::timer();
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
@@ -68,7 +68,7 @@ int main(){
 	// const auto N = 1000;
 	// const auto K = 100;
 	const auto stddev = 0.01;
-	std::vector<int> v1{31}; // v1{10, 20, 30}
+	std::vector<int> v1{63}; // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(2, 100);
 	for(const auto& N : v1){
 	for(const auto& K : v2){
