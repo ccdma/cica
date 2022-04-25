@@ -37,8 +37,18 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 		S.row(i) = cica::const_powerd_sampling(2, random_engine(), N); //cica::weyl_sampling((double)i/K+1.0/(2.0*N), 0, N);
 	}
 
-	const cica::cmatrix T = (S.array() * B.array()).matrix();
-	const cica::vector A = cica::vector::Ones(K); // cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs();
+	cica::cmatrix T = (S.array() * B.array()).matrix();
+
+	for(int k=1; k<K; k++){
+		cica::cvector tmp(N);
+		const int diff = random_engine() % N;
+		for (int n=0; n<N; n++){
+			tmp(n) = T( k, (diff+n)%N ) * cica::sign(diff - n);
+		}
+		T.row(k) = tmp;
+	}
+
+	const cica::vector A = cica::vector::Zero(K).unaryExpr([&] (double d) {return 1.0/(double)K;}); // cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs();
 	const cica::cvector AWGN = cica::cgauss_matrix(N, 1, stddev, random_engine).col(0);
 	const cica::cvector X = T.transpose() * A + AWGN;
 
@@ -47,7 +57,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 	const cica::cvector RBPSK_DATA = RB.rowwise().mean();	// BPSKの形に戻す
 	const cica::ivector RBITS = RBPSK_DATA.real().array().sign().matrix().cast<int>();
 
-	const auto ber = cica::bit_error_rate(BITS, RBITS);
+	const auto ber = cica::bit_error_rate(BITS.block(0, 0, 1, 1), RBITS.block(0, 0, 1, 1));
 	return test_report{.ber=ber, .time=(double)timer.from_start()}; 
 }
 

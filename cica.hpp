@@ -124,6 +124,10 @@ namespace cica { namespace util {
 
 namespace cica {
 
+	double sign(double x){
+		return ( x >= 0 ) - ( x < 0 );
+	}
+
 	/**
 	 * -0.5~0.5までの一様乱数からなる正方行列を生成
 	 */ 
