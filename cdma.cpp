@@ -14,6 +14,7 @@
 struct test_report {
 
 	double ber;
+	double sir;
 	double time;
 };
 
@@ -43,12 +44,13 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 		cica::cvector tmp(N);
 		const int diff = random_engine() % N;
 		for (int n=0; n<N; n++){
-			tmp(n) = T( k, (diff+n)%N ) * cica::sign(diff - n);
+			tmp(n) = T( k, (diff+n)%N ); //* cica::sign(diff - n);
 		}
 		T.row(k) = tmp;
 	}
 
 	const cica::vector A = cica::vector::Zero(K).unaryExpr([&] (double d) {return 1.0/(double)K;}); // cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs();
+	const double sir = (T.row(0).array().abs2() / T.bottomRows(K-1).cwiseAbs2().rowwise().sum().array()).mean();
 	const cica::cvector AWGN = cica::cgauss_matrix(N, 1, stddev, random_engine).col(0);
 	const cica::cvector X = T.transpose() * A + AWGN;
 
@@ -58,7 +60,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 	const cica::ivector RBITS = RBPSK_DATA.real().array().sign().matrix().cast<int>();
 
 	const auto ber = cica::bit_error_rate(BITS.block(0, 0, 1, 1), RBITS.block(0, 0, 1, 1));
-	return test_report{.ber=ber, .time=(double)timer.from_start()}; 
+	return test_report{.ber=ber, .sir=sir, .time=(double)timer.from_start()}; 
 }
 
 int main(){
@@ -72,19 +74,21 @@ int main(){
 		<< "N" << sep
 		<< "stddev" << sep
 		<< "ber" << sep
+		<< "sir" << sep
 		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
 	// const auto N = 1000;
 	// const auto K = 100;
-	const auto stddev = 0.01;
+	const auto stddev = 0.0;
 	std::vector<int> v1{63}; // v1{10, 20, 30}
-	std::vector<int> v2 = cica::util::range(2, 100);
+	std::vector<int> v2 = cica::util::range(10, 100);
 	for(const auto& N : v1){
 	for(const auto& K : v2){
 
 		int complete = 0;
 		double ber_sum = 0.0;
+		double sir_sum = 0.0;
 		double time = 0.0;
 		#pragma omp parallel for
 		for (int seed=0; seed<trials; seed++){
@@ -93,6 +97,7 @@ int main(){
 				#pragma omp critical
 				{
 					ber_sum += report.ber;
+					sir_sum += report.sir;
 					time += report.time;
 					complete += 1;
 				}
@@ -103,6 +108,7 @@ int main(){
 			<< N << sep
 			<< stddev << sep
 			<< ber_sum/complete << sep 
+			<< sir_sum/complete << sep
 			<< complete << sep
 			<< time/complete
 		<< std::endl;
