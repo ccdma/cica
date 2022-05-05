@@ -119,13 +119,21 @@ namespace cica { namespace util {
 	private:
 		const std::chrono::system_clock::time_point start;
 		std::chrono::system_clock::time_point last;
-	};		
+	};
 }}
 
 namespace cica {
 
 	double sign(double x){
 		return ( x >= 0 ) - ( x < 0 );
+	}
+
+	double sinr(const cmatrix T, const cvector A, const cvector AWGN) {
+		const cmatrix TA = (T.array() * A.replicate(1, T.cols()).array()).matrix();
+		const double Zs = TA.row(0).array().abs2().sum();
+		const double Zin = TA.bottomRows(TA.rows()-1).array().abs2().sum();
+		const double Zn = AWGN.array().abs2().sum();
+		return Zs/(Zin + Zn);
 	}
 
 	/**

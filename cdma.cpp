@@ -14,7 +14,7 @@
 struct test_report {
 
 	double ber;
-	double sir;
+	double sinr;
 	double time;
 };
 
@@ -50,9 +50,10 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 	}
 
 	const cica::vector A = cica::vector::Zero(K).unaryExpr([&] (double d) {return 1.0/(double)K;}); // cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs();
-	const double sir = (T.row(0).array().abs2() / T.bottomRows(K-1).cwiseAbs2().rowwise().sum().array()).mean();
 	const cica::cvector AWGN = cica::cgauss_matrix(N, 1, stddev, random_engine).col(0);
 	const cica::cvector X = T.transpose() * A + AWGN;
+
+	const double sinr = cica::sinr(T, A, AWGN);
 
 	const cica::cmatrix RB = (X.transpose().replicate(K, 1).array() * S.conjugate().array()).matrix();
 	
@@ -60,7 +61,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 	const cica::ivector RBITS = RBPSK_DATA.real().array().sign().matrix().cast<int>();
 
 	const auto ber = cica::bit_error_rate(BITS.block(0, 0, 1, 1), RBITS.block(0, 0, 1, 1));
-	return test_report{.ber=ber, .sir=sir, .time=(double)timer.from_start()}; 
+	return test_report{.ber=ber, .sinr=sinr, .time=(double)timer.from_start()}; 
 }
 
 int main(){
@@ -74,7 +75,7 @@ int main(){
 		<< "N" << sep
 		<< "stddev" << sep
 		<< "ber" << sep
-		<< "sir" << sep
+		<< "sinr" << sep
 		<< "complete" << sep
 		<< "time(ms)"
 	<< std::endl;	// header
@@ -88,7 +89,7 @@ int main(){
 
 		int complete = 0;
 		double ber_sum = 0.0;
-		double sir_sum = 0.0;
+		double sinr_sum = 0.0;
 		double time = 0.0;
 		#pragma omp parallel for
 		for (int seed=0; seed<trials; seed++){
@@ -97,7 +98,7 @@ int main(){
 				#pragma omp critical
 				{
 					ber_sum += report.ber;
-					sir_sum += report.sir;
+					sinr_sum += report.sinr;
 					time += report.time;
 					complete += 1;
 				}
@@ -108,7 +109,7 @@ int main(){
 			<< N << sep
 			<< stddev << sep
 			<< ber_sum/complete << sep 
-			<< sir_sum/complete << sep
+			<< sinr_sum/complete << sep
 			<< complete << sep
 			<< time/complete
 		<< std::endl;
