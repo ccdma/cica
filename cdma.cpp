@@ -49,7 +49,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 		T.row(k) = tmp;
 	}
 
-	const cica::vector A = cica::vector::Zero(K).unaryExpr([&] (double d) {return 1.0/(double)K;}); // cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs();
+	const cica::vector A = cica::vector::Ones(K); //.unaryExpr([&] (double d) {return 1.0/(double)K;}); // cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs();
 	const cica::cvector AWGN = cica::cgauss_matrix(N, 1, stddev, random_engine).col(0);
 	const cica::cvector X = T.transpose() * A + AWGN;
 
