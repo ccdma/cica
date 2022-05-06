@@ -33,7 +33,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 
 	const cica::cmatrix T = (S.array() * B.cast<double>().array()).matrix();
 	const cica::matrix A = cica::random_uniform_matrix(signals, random_engine);
-	const cica::cmatrix X = A * T + cica::cgauss_matrix(signals, samplings, norm_stddev, random_engine);
+	const cica::cmatrix X = A * T + cica::cgauss_matrix(signals, samplings, norm_stddev * 0.5 * (double)signals, random_engine);
 
 	const auto r_res = cica::fastica::fastica(X.real());
 	const auto i_res = cica::fastica::fastica(X.imag());
