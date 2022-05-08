@@ -66,7 +66,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 
 int main(){
 	
-	const auto trials = 100000;
+	const auto trials = 1000000;
 	const auto sep = ",";
 	auto timer = new cica::util::timer();
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
@@ -81,7 +81,7 @@ int main(){
 	<< std::endl;	// header
 	// const auto N = 1000;
 	// const auto K = 100;
-	const auto stddev = 0.0;
+	const auto stddev = 0.01;
 	std::vector<int> v1{63}; // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(10, 100);
 	for(const auto& N : v1){
