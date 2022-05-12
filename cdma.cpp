@@ -49,7 +49,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 		T.row(k) = tmp;
 	}
 
-	const cica::vector A = cica::vector::Zero(K).unaryExpr([&] (double d) {return 1.0/(double)K;}); // cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs();
+	const cica::vector A = cica::vector::Ones(K); //.unaryExpr([&] (double d) {return 1.0/(double)K;}); // cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs();
 	const cica::cvector AWGN = cica::cgauss_matrix(N, 1, stddev, random_engine).col(0);
 	const cica::cvector X = T.transpose() * A + AWGN;
 
@@ -66,7 +66,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 
 int main(){
 	
-	const auto trials = 100000;
+	const auto trials = 1000000;
 	const auto sep = ",";
 	auto timer = new cica::util::timer();
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
@@ -81,7 +81,7 @@ int main(){
 	<< std::endl;	// header
 	// const auto N = 1000;
 	// const auto K = 100;
-	const auto stddev = 0.0;
+	const auto stddev = 0.01;
 	std::vector<int> v1{63}; // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(10, 100);
 	for(const auto& N : v1){
