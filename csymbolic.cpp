@@ -57,7 +57,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 100;
+	const auto trials = 400;
 	const auto sep = ",";
 	auto timer = new cica::util::timer();
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
