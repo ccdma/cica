@@ -26,7 +26,8 @@ test_report test(const int signals, const int samplings, const int seed, const d
 
 	for (int i=0; i<signals; i++){
 		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
-		noncenterS.row(i) = cica::const_powerd_sampling(2, 2*M_PI*distribution(random_engine), samplings);
+		// noncenterS.row(i) = cica::const_powerd_sampling(2, 2*M_PI*distribution(random_engine), samplings);
+		noncenterS.row(i) = cica::exact_const_powerd_sampling(samplings, 2, i+seed+2);
 	}
 
 	const cica::cmatrix S = cica::centerize(noncenterS);
@@ -56,7 +57,7 @@ test_report test(const int signals, const int samplings, const int seed, const d
 }
 
 int main(){
-	const auto trials = 1000;
+	const auto trials = 100;
 	const auto sep = ",";
 	auto timer = new cica::util::timer();
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
@@ -71,8 +72,8 @@ int main(){
 	<< std::endl;	// header
 	// const auto samplings = 1000;
 	// const auto signals = 100;
-	const auto stddev = 0.01;
-	std::vector<int> v1{1000};// = cica::util::range(200, 1000, 200); // v1{10, 20, 30}
+	const auto stddev = 0.1;
+	std::vector<int> v1{1019};// = cica::util::range(200, 1000, 200); // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(2, 500);
 	for(const auto& samplings : v1){
 	for(const auto& j : v2){
@@ -110,7 +111,7 @@ int main(){
 			<< complete << sep
 			<< time/complete
 		<< std::endl;
-		if (ber_sum/complete > 0.01) break;
+		if (ber_sum/complete > 0.1) break;
 	}} // end root for
 	return 0;
 }
