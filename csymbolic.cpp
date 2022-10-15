@@ -27,7 +27,8 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	for (int i=0; i<signals; i++){
 		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
 		// noncenterS.row(i) = cica::const_powerd_sampling(2, 2*M_PI*distribution(random_engine), samplings);
-		noncenterS.row(i) = cica::exact_const_powerd_sampling(samplings, 2, i+seed+2);
+		noncenterS.row(i).bottomRows(samplings-1) = cica::exact_const_powerd_sampling(samplings, 2, i+seed+1);
+		noncenterS(i, 0) = 1.0;
 	}
 
 	const cica::cmatrix S = cica::centerize(noncenterS);

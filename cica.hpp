@@ -287,10 +287,10 @@ namespace cica {
 		return S;
 	}
 
-	cvector exact_const_powerd_sampling(const int p, const int q, const int start = 1){
-		cvector S(p);
-		int prev = start;
-		for (int i=0; i<p; i++){
+	cvector exact_const_powerd_sampling(const int p, const int q, const int k = 1){
+		cvector S(p-1);
+		int prev = k;
+		for (int i=0; i<p-1; i++){
 			S(i) = exp(dcomplex(0, -1) * 2.0 * M_PI * (double)prev / (double)p);
 			prev = (prev * q) % p;
 		}
