@@ -207,6 +207,37 @@ namespace cica {
 		return (M_center * M_center.transpose()) / double(M_center.cols() - 1);
 	}
 
+	bool is_prime(int n) {
+		if (n <= 1) return false;
+		for (int i = 2; i < n; i++){
+			if (n % i == 0) return false;
+		}
+		return true;
+	}
+
+	bool is_primitive_root(int p, int q) {
+		if (q >= p) return false;
+		if (p <= 1) return false;
+		if (p == 2) return true;
+		if (!is_prime(p)) return false;
+		auto prev = 1;
+		for (int i=1; i<p-1; i++){
+			prev = (prev*q)%p;
+			if (prev == 1) return false;
+		}
+		return true;	
+	}
+
+	/**
+	 * 与えられたpに対し、原始根となるようなqを探索する
+	 */
+	std::vector<int> primitive_roots(int p) {
+		std::vector<int> v;
+		for (int q=2; q<p; q++){
+			if (is_primitive_root(p, q)) v.push_back(q);
+		}
+		return v;
+	}
     
 	std::vector<double> to_std_vector(const vector& v1){
 		std::vector<double> v2(v1.data(), v1.data() + v1.size());
@@ -288,10 +319,11 @@ namespace cica {
 	}
 
 	cvector exact_const_powerd_sampling(const int p, const int q, const int k = 1){
-		cvector S(p-1);
+		cvector S(p);
+		S(0) = 1.0;
 		int prev = k;
 		for (int i=0; i<p-1; i++){
-			S(i) = exp(dcomplex(0, -1) * 2.0 * M_PI * (double)prev / (double)p);
+			S(i+1) = exp(dcomplex(0, -1) * 2.0 * M_PI * (double)prev / (double)p);
 			prev = (prev * q) % p;
 		}
 		return S;
