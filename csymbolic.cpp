@@ -27,8 +27,8 @@ test_report test(const int signals, const int samplings, const int seed, const d
 	auto q_list = cica::primitive_roots(samplings);
 	for (int i=0; i<signals; i++){
 		std::uniform_real_distribution<double> distribution(-0.99, 0.99);
-		// noncenterS.row(i) = cica::const_powerd_sampling(2, 2*M_PI*distribution(random_engine), samplings);
-		noncenterS.row(i) = cica::exact_const_powerd_sampling(samplings, q_list.at(i), seed);
+		noncenterS.row(i) = cica::const_powerd_sampling(2, 2*M_PI*distribution(random_engine), samplings);
+		// noncenterS.row(i) = cica::exact_const_powerd_sampling(samplings, 2, i+seed+2);
 	}
 
 	const cica::cmatrix S = cica::centerize(noncenterS);
@@ -73,7 +73,7 @@ int main(){
 	<< std::endl;	// header
 	// const auto samplings = 1000;
 	// const auto signals = 100;
-	const auto stddev = 0.1;
+	const auto stddev = 0.01;
 	std::vector<int> v1{1019};// = cica::util::range(200, 1000, 200); // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(2, 500);
 	for(const auto& samplings : v1){
