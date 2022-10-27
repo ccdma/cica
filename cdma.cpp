@@ -36,6 +36,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 	cica::cmatrix S(K, N);
 	for (int i=0; i<K; i++){
 		S.row(i) = cica::const_powerd_sampling(2, random_engine(), N); //cica::weyl_sampling((double)i/K+1.0/(2.0*N), 0, N);
+		// S.row(i) = cica::exact_const_powerd_sampling(N, 2, i+seed+2);
 	}
 
 	cica::cmatrix T = (S.array() * B.array()).matrix();
@@ -82,7 +83,7 @@ int main(){
 	// const auto N = 1000;
 	// const auto K = 100;
 	const auto stddev = 0.01;
-	std::vector<int> v1{63}; // v1{10, 20, 30}
+	std::vector<int> v1{61}; // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(10, 100);
 	for(const auto& N : v1){
 	for(const auto& K : v2){
