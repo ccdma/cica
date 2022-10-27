@@ -67,7 +67,7 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 
 int main(){
 	
-	const auto trials = 1000000;
+	const auto trials = 100000;
 	const auto sep = ",";
 	auto timer = new cica::util::timer();
 	std::cout << "commit" << ":" << COMMIT_ID << std::endl;
