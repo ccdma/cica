@@ -82,7 +82,7 @@ int main(){
 	<< std::endl;	// header
 	// const auto N = 1000;
 	// const auto K = 100;
-	const auto stddev = 0.3;
+	const auto stddev = 0.5;
 	std::vector<int> v1{61}; // v1{10, 20, 30}
 	std::vector<int> v2 = cica::util::range(10, 100);
 	for(const auto& N : v1){
