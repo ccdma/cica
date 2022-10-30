@@ -13,6 +13,8 @@
 	#define EIGEN_NO_DEBUG
 #endif
 
+#define COUT(arg) std::cout << arg << std::endl
+
 #include <iostream>
 #include <fstream>
 #include <vector>
