@@ -35,8 +35,8 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 	const cica::cmatrix B = BPSK_DATA.replicate(1, N); //拡散符号分の長さにする
 	cica::cmatrix S(K, N);
 	for (int i=0; i<K; i++){
-		S.row(i) = cica::const_powerd_sampling(2, random_engine(), N); //cica::weyl_sampling((double)i/K+1.0/(2.0*N), 0, N);
-		// S.row(i) = cica::exact_const_powerd_sampling(N, 2, i+seed+2);
+		// S.row(i) = cica::const_powerd_sampling(2, random_engine(), N); //cica::weyl_sampling((double)i/K+1.0/(2.0*N), 0, N);
+		S.row(i) = cica::exact_const_powerd_sampling(N, 2, i+seed+2);
 	}
 
 	cica::cmatrix T = (S.array() * B.array()).matrix();
