@@ -8,7 +8,7 @@ SRCS += orth.cpp
 
 COMMIT := $(shell git rev-parse --short HEAD | tr -d '\n'; if [ `git status -s -uno | wc -l` -ne 0 ]; then echo "_unstaged"; fi)
 
-$(SRCS:.cpp=.out): clean
+$(SRCS:.cpp=.out): clean commit
 	$(CC) $(CFLAGS) $(@:.out=.cpp) -o $@ -DCOMMIT_ID=\"$(COMMIT)\"
 
 clean:
@@ -16,5 +16,9 @@ clean:
 
 clean-all: clean
 	rm -f *.csv
+
+commit:
+	git add -A .
+	git commit -m "modified: $(shell git diff master --name-only)"
 
 .PHONY: clean clean-all
