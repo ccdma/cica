@@ -6,10 +6,8 @@ SRCS += csymbolic.cpp
 SRCS += cdma.cpp
 SRCS += orth.cpp
 
-COMMIT := $(shell git rev-parse --short HEAD | tr -d '\n'; if [ `git status -s -uno | wc -l` -ne 0 ]; then echo "_unstaged"; fi)
-
 $(SRCS:.cpp=.out): clean commit
-	$(CC) $(CFLAGS) $(@:.out=.cpp) -o $@ -DCOMMIT_ID=\"$(COMMIT)\"
+	$(CC) $(CFLAGS) $(@:.out=.cpp) -o $@ -DCOMMIT_ID=\"$(shell git rev-parse --short HEAD | tr -d '\n'; if [ `git status -s -uno | wc -l` -ne 0 ]; then echo "_unstaged"; fi)\"
 
 clean:
 	rm -f *.out 
