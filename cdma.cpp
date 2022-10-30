@@ -41,14 +41,14 @@ test_report test(const int K, const int N, const int seed, const double stddev){
 
 	cica::cmatrix T = (S.array() * B.array()).matrix();
 
-	for(int k=1; k<K; k++){
-		cica::cvector tmp(N);
-		const int diff = random_engine() % N;
-		for (int n=0; n<N; n++){
-			tmp(n) = T( k, (diff+n)%N ); //* cica::sign(diff - n);
-		}
-		T.row(k) = tmp;
-	}
+	// for(int k=1; k<K; k++){
+	// 	cica::cvector tmp(N);
+	// 	const int diff = random_engine() % N;
+	// 	for (int n=0; n<N; n++){
+	// 		tmp(n) = T( k, (diff+n)%N ); //* cica::sign(diff - n);
+	// 	}
+	// 	T.row(k) = tmp;
+	// }
 
 	const cica::vector A = cica::vector::Ones(K); //.unaryExpr([&] (double d) {return 1.0/(double)K;}); // cica::random_uniform_matrix(K, 1, random_engine).col(0).cwiseAbs();
 	const cica::cvector AWGN = cica::cgauss_matrix(N, 1, stddev, random_engine).col(0);
