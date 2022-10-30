@@ -17,6 +17,6 @@ clean-all: clean
 
 commit:
 	git add -A .
-	git commit -m "modified: $(shell git diff main --name-only)"
+	git diff --cached --exit-code || git commit -m "modified: $(shell git diff main --name-only)"
 
 .PHONY: clean clean-all
